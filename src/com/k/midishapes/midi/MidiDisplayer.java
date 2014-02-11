@@ -1,10 +1,12 @@
 package com.k.midishapes.midi;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 
+import javax.management.RuntimeErrorException;
 import javax.sound.midi.ShortMessage;
 
 import com.k.midishapes.interfacing.DisplayableInstrument;
@@ -16,11 +18,13 @@ public class MidiDisplayer {
     private static ArrayList<Class<? extends DisplayableInstrument<?>>> displayableClasses = new ArrayList<Class<? extends DisplayableInstrument<?>>>();
     private static ArrayList<Constructor<? extends DisplayableInstrument<?>>> displayableConstrs = new ArrayList<Constructor<? extends DisplayableInstrument<?>>>();
 
+    private static Class<? extends DisplayableInstrument<?>> currentClass = null;
+
     public static void init() {
         displayableClasses.add(DisplayableInstrumentImpl.class);
-        
+
         // register here later
-        
+
         ArrayList<Class<? extends DisplayableInstrument<?>>> rem = new ArrayList<Class<? extends DisplayableInstrument<?>>>();
         for (Class<? extends DisplayableInstrument<?>> c : displayableClasses) {
             try {
@@ -38,6 +42,10 @@ public class MidiDisplayer {
             }
         }
         displayableClasses.removeAll(rem);
+        if (displayableClasses.size() == 0) {
+            throw new InternalError("No DIs?");
+        }
+        currentClass = displayableClasses.get(0);
     }
 
     public static void display() {
@@ -84,7 +92,20 @@ public class MidiDisplayer {
 
     private static DisplayableInstrument<?> createCurrentDI() {
         int id = nextAvaliable++;
-        return new DisplayableInstrumentImpl(id);
+        try {
+            try {
+                return displayableConstrs.get(
+                        displayableClasses.indexOf(currentClass)).newInstance(
+                        id);
+            } catch (InvocationTargetException e) {
+                throw e.getCause();
+            } catch (Exception e) {
+                throw e;
+            }
+        } catch (Throwable t) {
+            throw (t instanceof Error) ? new RuntimeErrorException((Error) t)
+                    : new RuntimeException(t);
+        }
     }
 
     public static void exit() {
