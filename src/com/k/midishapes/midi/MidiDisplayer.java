@@ -5,6 +5,8 @@ import java.util.HashMap;
 
 import javax.sound.midi.ShortMessage;
 
+import com.k.midishapes.interfacing.DisplayableInstrument;
+
 public class MidiDisplayer {
     static HashMap<Integer, DisplayableInstrument> itod = new HashMap<Integer, DisplayableInstrument>();
     private static int nextAvaliable = 0;
@@ -26,7 +28,7 @@ public class MidiDisplayer {
         DisplayableInstrument inst = itod.get(id);
         if (inst == null) {
             synchronized (lk) {
-                inst = new DisplayableInstrument(nextAvaliable++);
+                inst = new DisplayableInstrumentImpl(nextAvaliable++);
                 itod.put(inst.getID(), inst);
             }
         }

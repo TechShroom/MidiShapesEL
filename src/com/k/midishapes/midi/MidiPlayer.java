@@ -189,6 +189,7 @@ public class MidiPlayer {
             tc.refresh(file);
         }
 
+        @Override
         public void run() {
             micro_tick = MidiUtils.tick2microsecond(s, 0, tc);
             long micro = 0;
