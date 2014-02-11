@@ -77,7 +77,6 @@ public class MidiMain extends KMain implements KeyListener {
         MidiReader.exit();
         MidiDisplayer.exit();
         MidiPlayer.exit();
-        System.exit(0);
     }
 
     private boolean reboot;
