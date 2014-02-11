@@ -1,5 +1,7 @@
 package com.k.midishapes.midi;
 
+import java.lang.reflect.Constructor;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 
@@ -11,8 +13,31 @@ public class MidiDisplayer {
     static HashMap<Integer, DisplayableInstrument<?>> itod = new HashMap<Integer, DisplayableInstrument<?>>();
     private static int nextAvaliable = 0;
     private static final Object lk = new Object();
+    private static ArrayList<Class<? extends DisplayableInstrument<?>>> displayableClasses = new ArrayList<Class<? extends DisplayableInstrument<?>>>();
+    private static ArrayList<Constructor<? extends DisplayableInstrument<?>>> displayableConstrs = new ArrayList<Constructor<? extends DisplayableInstrument<?>>>();
 
     public static void init() {
+        displayableClasses.add(DisplayableInstrumentImpl.class);
+        
+        // register here later
+        
+        ArrayList<Class<? extends DisplayableInstrument<?>>> rem = new ArrayList<Class<? extends DisplayableInstrument<?>>>();
+        for (Class<? extends DisplayableInstrument<?>> c : displayableClasses) {
+            try {
+                Constructor<? extends DisplayableInstrument<?>> constr = c
+                        .getDeclaredConstructor(int.class);
+                displayableConstrs.add(constr);
+            } catch (NoSuchMethodException e) {
+                System.err
+                        .println("Invalid class formatting: id parameter required @ "
+                                + c.getName());
+                rem.add(c);
+            } catch (SecurityException e) {
+                throw new IllegalAccessError(
+                        "Security Manager prevented reflection");
+            }
+        }
+        displayableClasses.removeAll(rem);
     }
 
     public static void display() {
