@@ -9,6 +9,12 @@ import emergencylanding.k.library.lwjgl.control.MouseHelp;
 import emergencylanding.k.library.lwjgl.render.VBAO;
 import emergencylanding.k.library.lwjgl.render.VertexData;
 
+/**
+ * The standard implementation.
+ * 
+ * @author Kenzie Togami
+ *
+ */
 public class DisplayableInstrumentImpl extends DefaultDisplayableInstrument {
     private VBAO[] notes = new VBAO[NOTES];
     private Runnable guiRunnable = new DIGUI(this);
