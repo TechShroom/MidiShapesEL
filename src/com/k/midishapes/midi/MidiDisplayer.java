@@ -38,7 +38,7 @@ public class MidiDisplayer {
                 // some midis like to use note on + vol=0 for note off
                 inst.stopNote(sm.getData1());
             } else {
-                inst.startNote(sm.getData1());
+                inst.playNote(sm.getData1());
             }
         } else {
             if (sm.getCommand() == MidiPlayer.CONTROL_CHANGE

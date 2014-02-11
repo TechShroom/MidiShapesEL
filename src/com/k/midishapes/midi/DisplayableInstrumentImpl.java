@@ -45,7 +45,7 @@ public class DisplayableInstrumentImpl extends DefaultDisplayableInstrument {
     }
 
     @Override
-    public void startNote(int note) {
+    public void playNote(int note) {
         notes[note].setTexture(noteOnColor());
     }
 

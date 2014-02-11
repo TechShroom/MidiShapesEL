@@ -21,6 +21,7 @@ public abstract class DefaultDisplayableInstrument implements
         id = idChannel;
     }
 
+    @Override
     public ELTexture noteOnColor() {
         if (noteOn == null) {
             noteOn = noteOnStatic;
@@ -28,6 +29,7 @@ public abstract class DefaultDisplayableInstrument implements
         return noteOn;
     }
 
+    @Override
     public ELTexture noteOffColor() {
         if (noteOff == null) {
             noteOff = noteOffStatic;
