@@ -7,8 +7,8 @@ import com.k.midishapes.interfacing.DisplayableInstrument;
 import emergencylanding.k.library.lwjgl.tex.ColorTexture;
 import emergencylanding.k.library.lwjgl.tex.ELTexture;
 
-public abstract class DefaultDisplayableInstrument implements
-        DisplayableInstrument {
+public abstract class DefaultDisplayableInstrument<T extends DefaultDisplayableInstrument<T>>
+        implements DisplayableInstrument<T> {
     /**
      * The constant representing the number of notes a MIDI supports
      */

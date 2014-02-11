@@ -8,7 +8,7 @@ import javax.sound.midi.ShortMessage;
 import com.k.midishapes.interfacing.DisplayableInstrument;
 
 public class MidiDisplayer {
-    static HashMap<Integer, DisplayableInstrument> itod = new HashMap<Integer, DisplayableInstrument>();
+    static HashMap<Integer, DisplayableInstrument<?>> itod = new HashMap<Integer, DisplayableInstrument<?>>();
     private static int nextAvaliable = 0;
     private static final Object lk = new Object();
 
@@ -17,18 +17,18 @@ public class MidiDisplayer {
 
     public static void display() {
         synchronized (lk) {
-            Collection<DisplayableInstrument> vals = itod.values();
-            for (DisplayableInstrument di : vals) {
+            Collection<DisplayableInstrument<?>> vals = itod.values();
+            for (DisplayableInstrument<?> di : vals) {
                 di.draw();
             }
         }
     }
 
     public static int sendToInstrument(ShortMessage sm, int id) {
-        DisplayableInstrument inst = itod.get(id);
+        DisplayableInstrument<?> inst = itod.get(id);
         if (inst == null) {
             synchronized (lk) {
-                inst = new DisplayableInstrumentImpl(nextAvaliable++);
+                inst = createCurrentDI();
                 itod.put(inst.getID(), inst);
             }
         }
@@ -57,6 +57,11 @@ public class MidiDisplayer {
         return inst.getID();
     }
 
+    private static DisplayableInstrument<?> createCurrentDI() {
+        int id = nextAvaliable++;
+        return new DisplayableInstrumentImpl(id);
+    }
+
     public static void exit() {
         synchronized (lk) {
             itod.clear();
@@ -65,7 +70,7 @@ public class MidiDisplayer {
 
     public static void stop(boolean keep) {
         synchronized (lk) {
-            for (DisplayableInstrument di : itod.values()) {
+            for (DisplayableInstrument<?> di : itod.values()) {
                 di.stopAll();
             }
             if (keep) {

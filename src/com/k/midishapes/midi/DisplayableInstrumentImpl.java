@@ -15,7 +15,8 @@ import emergencylanding.k.library.lwjgl.render.VertexData;
  * @author Kenzie Togami
  *
  */
-public class DisplayableInstrumentImpl extends DefaultDisplayableInstrument {
+public class DisplayableInstrumentImpl extends
+        DefaultDisplayableInstrument<DisplayableInstrumentImpl> {
     private VBAO[] notes = new VBAO[NOTES];
     private Runnable guiRunnable = new DIGUI(this);
     private final int rx = 0, ry, rz = 0;

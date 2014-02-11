@@ -15,11 +15,11 @@ import emergencylanding.k.library.lwjgl.tex.ColorTexture;
 import emergencylanding.k.library.lwjgl.tex.ELTexture;
 
 public class DIGUI implements Runnable {
-    private DefaultDisplayableInstrument ourInst = null;
+    private DisplayableInstrumentImpl ourInst = null;
     final JColorChooser noteOn = new JColorChooser();
     final JColorChooser noteOff = new JColorChooser();
 
-    public DIGUI(DefaultDisplayableInstrument di) {
+    public DIGUI(DisplayableInstrumentImpl di) {
         ourInst = di;
         noteOn.setName("Note On Color");
         noteOff.setName("Note Off Color");

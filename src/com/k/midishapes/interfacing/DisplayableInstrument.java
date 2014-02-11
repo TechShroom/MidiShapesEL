@@ -12,7 +12,7 @@ import emergencylanding.k.library.lwjgl.tex.ELTexture;
  * 
  * @author Kenzie Togami
  */
-public interface DisplayableInstrument {
+public interface DisplayableInstrument<T extends DisplayableInstrument<T>> {
     /**
      * Draws this instrument, although it is possible to react to certain events
      * here as well.
