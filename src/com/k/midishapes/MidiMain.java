@@ -13,6 +13,8 @@ import javax.sound.midi.MidiSystem;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
+import k.core.util.Helper.ProgramProps;
+
 import org.lwjgl.opengl.Display;
 
 import com.k.midishapes.midi.MidiDisplayer;
@@ -29,10 +31,10 @@ import emergencylanding.k.library.util.LUtils;
 
 public class MidiMain extends KMain implements KeyListener {
     public static void main(String[] args) {
-        String[] norm = CommandLine.normalizeCommandArgs(args);
+        String[] norm = ProgramProps.normalizeCommandArgs(args);
         for (int i = 0; i < norm.length; i += 2) {
             String key = norm[i], value = norm[i + 1];
-            CommandLine.acceptPair(key, value);
+            ProgramProps.acceptPair(key, value);
         }
         try {
             Method getsbr = MidiSystem.class
@@ -110,22 +112,22 @@ public class MidiMain extends KMain implements KeyListener {
             } catch (Exception e) {
             }
         }
-        if (args.length > 0 && args.length < 2 && !CommandLine.hasKey("file")) {
-            CommandLine.acceptPair("file", args[0]);
+        if (args.length > 0 && args.length < 2 && !ProgramProps.hasKey("file")) {
+            ProgramProps.acceptPair("file", args[0]);
         }
-        if (!CommandLine.hasKey("file")) {
+        if (!ProgramProps.hasKey("file")) {
             if (!askForFile()) {
-                CommandLine.acceptPair("file", "");
+                ProgramProps.acceptPair("file", "");
             }
         }
-        if (!CommandLine.hasKey("soundbank")) {
+        if (!ProgramProps.hasKey("soundbank")) {
             JFileChooser jfc = new JFileChooser();
             jfc.removeChoosableFileFilter(jfc.getAcceptAllFileFilter());
             jfc.addChoosableFileFilter(new FileNameExtensionFilter(
                     "SoundFont2 Files", "sf2"));
             jfc.showOpenDialog(null);
             if (jfc.getSelectedFile() != null) {
-                CommandLine.acceptPair("soundbank", jfc.getSelectedFile()
+                ProgramProps.acceptPair("soundbank", jfc.getSelectedFile()
                         .getAbsolutePath());
             }
         }
@@ -143,7 +145,7 @@ public class MidiMain extends KMain implements KeyListener {
         // WUtils.windows_safe_JFC(jfc, JFileChooser.OPEN_DIALOG);
         jfc.showOpenDialog(null);
         if (jfc.getSelectedFile() != null) {
-            CommandLine.acceptPair("file", jfc.getSelectedFile()
+            ProgramProps.acceptPair("file", jfc.getSelectedFile()
                     .getAbsolutePath());
             return true;
         }

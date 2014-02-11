@@ -11,14 +11,14 @@ import javax.sound.midi.Sequence;
 import javax.sound.midi.Soundbank;
 import javax.sound.midi.Synthesizer;
 
-import com.k.midishapes.CommandLine;
+import k.core.util.Helper.ProgramProps;
 
 public class MidiReader {
     public static File midi = null;
     public static Synthesizer synth = null;
 
     public static void init() {
-        midi = new File(CommandLine.getProperty("file"));
+        midi = new File(ProgramProps.getProperty("file"));
         try {
             synth = MidiSystem.getSynthesizer();
             Info[] info = MidiSystem.getMidiDeviceInfo();
@@ -35,9 +35,9 @@ public class MidiReader {
             e1.printStackTrace();
         }
         Soundbank sf2bank = synth.getDefaultSoundbank();
-        if (CommandLine.hasKey("soundbank")) {
+        if (ProgramProps.hasKey("soundbank")) {
             try {
-                sf2bank = MidiSystem.getSoundbank(new File(CommandLine
+                sf2bank = MidiSystem.getSoundbank(new File(ProgramProps
                         .getProperty("soundbank")));
             } catch (InvalidMidiDataException e) {
                 e.printStackTrace();
@@ -51,7 +51,7 @@ public class MidiReader {
             } catch (Exception e) {
             }
         }
-        if (CommandLine.hasKey("repeat")) {
+        if (ProgramProps.hasKey("repeat")) {
             MidiPlayer.repeat = true;
         }
     }
