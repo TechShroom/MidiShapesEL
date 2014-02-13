@@ -181,9 +181,4 @@ public class MidiMain extends KMain implements KeyListener {
     @Override
     public void keyTyped(KeyEvent arg0) {
     }
-
-    @Override
-    public void registerRenders(
-            HashMap<Class<? extends ELEntity>, Render<? extends ELEntity>> classToRender) {
-    }
 }
