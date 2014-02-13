@@ -18,7 +18,7 @@ public class MidiDisplayer {
     private static ArrayList<Class<? extends DisplayableInstrument<?>>> displayableClasses = new ArrayList<Class<? extends DisplayableInstrument<?>>>();
     private static ArrayList<Constructor<? extends DisplayableInstrument<?>>> displayableConstrs = new ArrayList<Constructor<? extends DisplayableInstrument<?>>>();
 
-    private static Class<? extends DisplayableInstrument<?>> currentClass = null;
+    private static int currentClass = 0;
 
     private static boolean init = false;
 
@@ -50,7 +50,7 @@ public class MidiDisplayer {
         if (displayableClasses.size() == 0) {
             throw new InternalError("No DIs?");
         }
-        currentClass = displayableClasses.get(0);
+        currentClass = 0;
         init = true;
     }
 
@@ -100,9 +100,7 @@ public class MidiDisplayer {
         int id = nextAvaliable++;
         try {
             try {
-                return displayableConstrs.get(
-                        displayableClasses.indexOf(currentClass)).newInstance(
-                        id);
+                return displayableConstrs.get(currentClass).newInstance(id);
             } catch (InvocationTargetException e) {
                 throw e.getCause();
             } catch (Exception e) {
