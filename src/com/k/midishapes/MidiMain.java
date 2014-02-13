@@ -6,7 +6,6 @@ import java.awt.event.KeyListener;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import javax.sound.midi.MidiSystem;
@@ -25,10 +24,8 @@ import com.k.midishapes.midi.MidiReader;
 
 import emergencylanding.k.exst.mods.IMod;
 import emergencylanding.k.library.debug.FPS;
-import emergencylanding.k.library.internalstate.ELEntity;
 import emergencylanding.k.library.lwjgl.DisplayLayer;
 import emergencylanding.k.library.lwjgl.control.Keys;
-import emergencylanding.k.library.lwjgl.render.Render;
 import emergencylanding.k.library.main.KMain;
 
 public class MidiMain extends KMain implements KeyListener {
