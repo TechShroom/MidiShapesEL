@@ -26,6 +26,7 @@ import emergencylanding.k.exst.mods.IMod;
 import emergencylanding.k.library.debug.FPS;
 import emergencylanding.k.library.lwjgl.DisplayLayer;
 import emergencylanding.k.library.lwjgl.control.Keys;
+import emergencylanding.k.library.lwjgl.tex.ELTexture;
 import emergencylanding.k.library.main.KMain;
 
 public class MidiMain extends KMain implements KeyListener {
@@ -155,27 +156,33 @@ public class MidiMain extends KMain implements KeyListener {
 
     @Override
     public void keyReleased(KeyEvent arg0) {
-        int key = arg0.getKeyCode();
-        if (key == KeyEvent.VK_P || key == KeyEvent.VK_SPACE) {
-            if (MidiPlayer.isPlaying()) {
-                MidiPlayer.pause();
-            } else {
-                MidiPlayer.start();
-            }
-        }
-        if (key == KeyEvent.VK_ESCAPE) {
-            MidiPlayer.stop();
-        }
-        if (key == KeyEvent.VK_F) {
-            boolean success = askForFile();
-            if (success) {
-                reboot = true;
-            }
-        }
-        if (key == KeyEvent.VK_R) {
-            MidiPlayer.repeat = !MidiPlayer.repeat;
-        }
+        final int key = arg0.getKeyCode();
+        Runnable r = new Runnable() {
 
+            @Override
+            public void run() {
+                if (key == KeyEvent.VK_P || key == KeyEvent.VK_SPACE) {
+                    if (MidiPlayer.isPlaying()) {
+                        MidiPlayer.pause();
+                    } else {
+                        MidiPlayer.start();
+                    }
+                }
+                if (key == KeyEvent.VK_ESCAPE) {
+                    MidiPlayer.stop();
+                }
+                if (key == KeyEvent.VK_F) {
+                    boolean success = askForFile();
+                    if (success) {
+                        reboot = true;
+                    }
+                }
+                if (key == KeyEvent.VK_R) {
+                    MidiPlayer.repeat = !MidiPlayer.repeat;
+                }
+            }
+        };
+        ELTexture.addRunnableToQueue(r);
     }
 
     @Override
