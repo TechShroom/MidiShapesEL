@@ -20,7 +20,12 @@ public class MidiDisplayer {
 
     private static Class<? extends DisplayableInstrument<?>> currentClass = null;
 
+    private static boolean init = false;
+
     public static void init() {
+        if (init) {
+            return;
+        }
         displayableClasses.add(DisplayableInstrumentImpl.class);
 
         // register here later
@@ -46,6 +51,7 @@ public class MidiDisplayer {
             throw new InternalError("No DIs?");
         }
         currentClass = displayableClasses.get(0);
+        init = true;
     }
 
     public static void display() {
@@ -129,7 +135,7 @@ public class MidiDisplayer {
 
     public static void registerClass(
             Class<? extends DisplayableInstrument<?>> diClass) {
-        if (displayableClasses.size() > 0) {
+        if (init) {
             // already init, register methods
 
             try {
