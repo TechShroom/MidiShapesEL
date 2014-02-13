@@ -106,6 +106,8 @@ public class MidiDisplayer {
             } catch (Exception e) {
                 throw e;
             }
+        } catch (RuntimeException re) {
+            throw re;
         } catch (Throwable t) {
             throw (t instanceof Error) ? new RuntimeErrorException((Error) t)
                     : new RuntimeException(t);
