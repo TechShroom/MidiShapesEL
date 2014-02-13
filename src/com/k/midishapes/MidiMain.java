@@ -27,7 +27,6 @@ import emergencylanding.k.library.lwjgl.DisplayLayer;
 import emergencylanding.k.library.lwjgl.control.Keys;
 import emergencylanding.k.library.lwjgl.render.Render;
 import emergencylanding.k.library.main.KMain;
-import emergencylanding.k.library.util.LUtils;
 
 public class MidiMain extends KMain implements KeyListener {
     public static void main(String[] args) {
@@ -56,8 +55,7 @@ public class MidiMain extends KMain implements KeyListener {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        Dimension d = LUtils.getDimensionFromUserAndArgs(
-                LUtils.getDimensions(), norm);
+        Dimension d = new Dimension(800, 600);
         FPS.enable(0);
         FPS.disable(0);
         try {
