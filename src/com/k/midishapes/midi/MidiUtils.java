@@ -280,7 +280,6 @@ public class MidiUtils {
         static volatile AtomicInteger complete = new AtomicInteger(0);
 
         public EventCache(final Track t) {
-            complete.incrementAndGet();
             for (int i = 0; i < t.size(); i++) {
                 MidiEvent me = t.get(i);
                 events.put(i, me);
@@ -291,7 +290,7 @@ public class MidiUtils {
                 tmp.add(i);
                 tick_to_index.put(me.getTick(), tmp);
             }
-            complete.decrementAndGet();
+            complete.incrementAndGet();
         }
     }
 

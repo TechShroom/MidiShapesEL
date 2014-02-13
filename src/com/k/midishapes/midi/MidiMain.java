@@ -1,4 +1,4 @@
-package com.k.midishapes;
+package com.k.midishapes.midi;
 
 import java.awt.Dimension;
 import java.awt.event.KeyEvent;
@@ -18,9 +18,6 @@ import org.lwjgl.opengl.Display;
 
 import com.k.midishapes.interfacing.DIMod;
 import com.k.midishapes.interfacing.DisplayableInstrument;
-import com.k.midishapes.midi.MidiDisplayer;
-import com.k.midishapes.midi.MidiPlayer;
-import com.k.midishapes.midi.MidiReader;
 
 import emergencylanding.k.exst.mods.IMod;
 import emergencylanding.k.library.debug.FPS;
@@ -129,6 +126,8 @@ public class MidiMain extends KMain implements KeyListener {
                         .getAbsolutePath());
             }
         }
+        // prevents sync issues
+        DefaultDisplayableInstrument.init();
         MidiReader.init();
         MidiDisplayer.init();
         MidiPlayer.start();

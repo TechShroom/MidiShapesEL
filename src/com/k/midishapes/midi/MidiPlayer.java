@@ -2,6 +2,7 @@ package com.k.midishapes.midi;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.MidiEvent;
@@ -131,7 +132,6 @@ public class MidiPlayer {
 
         public DisplayHackThread(Sequence file) {
             s = file;
-            int index = 0;
             subs.clear();
             try {
                 if (recv != null) {
@@ -152,14 +152,29 @@ public class MidiPlayer {
             if (abort) {
                 return;
             }
-            for (Track t : s.getTracks()) {
+            final AtomicInteger index = new AtomicInteger(0);
+            for (final Track t : s.getTracks()) {
                 if (t.size() <= 1) {
                     continue;
                 }
-                subs.put(t, new SubHack(MidiUtils.channel(t)));
-                subs.get(t).ec = new EventCache(t);
-                subs.get(t).t = t;
-                index++;
+                Runnable r = new Runnable() {
+                    @Override
+                    public void run() {
+                        subs.put(t, new SubHack(MidiUtils.channel(t)));
+                        subs.get(t).ec = new EventCache(t);
+                        subs.get(t).t = t;
+                        index.incrementAndGet();
+                        System.err.println(index);
+                    }
+                };
+                new Thread(r, "TrackLoader").start();
+            }
+            int trks = s.getTracks().length;
+            while (EventCache.complete.get() < trks) {
+                try {
+                    Thread.sleep(1);
+                } catch (InterruptedException ie) {
+                }
             }
             System.err.println("[DisplayHackThread] Created " + index
                     + " tracks.");
