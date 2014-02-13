@@ -27,6 +27,7 @@ package com.k.midishapes.midi;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.sound.midi.MetaMessage;
 import javax.sound.midi.MidiEvent;
@@ -276,10 +277,10 @@ public class MidiUtils {
     public static class EventCache {
         HashMap<Integer, MidiEvent> events = new HashMap<Integer, MidiEvent>();
         HashMap<Long, ArrayList<Integer>> tick_to_index = new HashMap<Long, ArrayList<Integer>>();
-        static int complete = 0;
+        static volatile AtomicInteger complete = new AtomicInteger(0);
 
         public EventCache(final Track t) {
-            complete++;
+            complete.incrementAndGet();
             for (int i = 0; i < t.size(); i++) {
                 MidiEvent me = t.get(i);
                 events.put(i, me);
@@ -290,10 +291,7 @@ public class MidiUtils {
                 tmp.add(i);
                 tick_to_index.put(me.getTick(), tmp);
             }
-            MidiEvent me = t.get(0);
-            System.err.println("First event for track " + t + " is " + 0 + ":"
-                    + me.getTick() + "," + me.getMessage());
-            complete--;
+            complete.decrementAndGet();
         }
     }
 
