@@ -17,10 +17,13 @@ import k.core.util.Helper.ProgramProps;
 
 import org.lwjgl.opengl.Display;
 
+import com.k.midishapes.interfacing.DIMod;
+import com.k.midishapes.interfacing.DisplayableInstrument;
 import com.k.midishapes.midi.MidiDisplayer;
 import com.k.midishapes.midi.MidiPlayer;
 import com.k.midishapes.midi.MidiReader;
 
+import emergencylanding.k.exst.mods.IMod;
 import emergencylanding.k.library.debug.FPS;
 import emergencylanding.k.library.internalstate.ELEntity;
 import emergencylanding.k.library.lwjgl.DisplayLayer;
@@ -180,5 +183,23 @@ public class MidiMain extends KMain implements KeyListener {
 
     @Override
     public void keyTyped(KeyEvent arg0) {
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public void loadMods(ArrayList<IMod> mods) {
+        ArrayList<IMod> rem = new ArrayList<IMod>(mods.size());
+        for (IMod m : mods) {
+            if (m instanceof DIMod) {
+                MidiDisplayer.registerClass(((DIMod) m).getDIClass());
+            } else if (m instanceof DisplayableInstrument<?>) {
+                // messed up generics means this needs the unchecked cast
+                MidiDisplayer
+                        .registerClass((Class<? extends DisplayableInstrument<?>>) ((DisplayableInstrument<?>) m)
+                                .getClass());
+            } else {
+                rem.add(m);
+            }
+        }
     }
 }

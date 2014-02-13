@@ -127,4 +127,27 @@ public class MidiDisplayer {
         }
     }
 
+    public static void registerClass(
+            Class<? extends DisplayableInstrument<?>> diClass) {
+        if (displayableClasses.size() > 0) {
+            // already init, register methods
+
+            try {
+                Constructor<? extends DisplayableInstrument<?>> constr = diClass
+                        .getDeclaredConstructor(int.class);
+                displayableConstrs.add(constr);
+            } catch (NoSuchMethodException e) {
+                System.err
+                        .println("Invalid class formatting: id parameter required @ "
+                                + diClass.getName());
+                return;
+            } catch (SecurityException e) {
+                throw new IllegalAccessError(
+                        "Security Manager prevented reflection");
+            }
+        }
+        // add the class
+        displayableClasses.add(diClass);
+    }
+
 }
