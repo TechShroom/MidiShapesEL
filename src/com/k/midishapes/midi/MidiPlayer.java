@@ -100,13 +100,6 @@ public class MidiPlayer {
         public long tick;
         public static boolean running, abort;
         protected static Receiver recv = null;
-        static {
-            try {
-                recv = MidiSystem.getReceiver();
-            } catch (MidiUnavailableException e) {
-                e.printStackTrace();
-            }
-        }
 
         Sequence s = null;
         HashMap<Track, SubHack> subs = new HashMap<Track, SubHack>();
@@ -133,6 +126,7 @@ public class MidiPlayer {
         public DisplayHackThread(Sequence file) {
             s = file;
             subs.clear();
+            EventCache.complete.set(0);
             try {
                 if (recv != null) {
                     recv.close();
@@ -153,6 +147,7 @@ public class MidiPlayer {
                 return;
             }
             final AtomicInteger index = new AtomicInteger(0);
+            int trks = 0;
             for (final Track t : s.getTracks()) {
                 if (t.size() <= 1) {
                     continue;
@@ -168,16 +163,17 @@ public class MidiPlayer {
                     }
                 };
                 new Thread(r, "TrackLoader").start();
+                trks++;
             }
-            int trks = s.getTracks().length;
             while (EventCache.complete.get() < trks) {
                 try {
                     Thread.sleep(1);
                 } catch (InterruptedException ie) {
                 }
             }
-            System.err.println("[DisplayHackThread] Created " + index
-                    + " tracks.");
+            System.err.println("[DisplayHackThread] Created " + index + "/"
+                    + trks + " tracks. (reported that we completed "
+                    + EventCache.complete + ")");
             try {
                 Thread.sleep(10);
             } catch (InterruptedException is) {

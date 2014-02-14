@@ -75,7 +75,7 @@ public class MidiMain extends KMain implements KeyListener {
         MidiPlayer.exit();
     }
 
-    private boolean reboot;
+    boolean reboot;
 
     @Override
     public void onDisplayUpdate(int delta) {

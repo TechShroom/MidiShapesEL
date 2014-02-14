@@ -10,16 +10,15 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry exported="true" kind="lib" path="asm-debug-all.jar"/>
-	<classpathentry exported="true" kind="lib" path="lwjgl.jar" sourcepath="/LetsTryLWJGL/lib/lwjgl-source-2.9.0.zip">
-		<attributes>
-			<attribute name="javadoc_location" value="jar:platform:/resource/LetsTryLWJGL/lib/lwjgl-docs-2.9.0.zip!/javadoc"/>
-			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="LetsTryLWJGL/natives"/>
-		</attributes>
-	</classpathentry>
 	<classpathentry exported="true" kind="lib" path="lzma.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/Gervill"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/EmergencyLanding"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/KCore"/>
+	<classpathentry kind="lib" path="/EmergencyLanding/src/res/libs/lwjgl.jar" sourcepath="/EmergencyLanding/src/res/libs/sources/lwjgl-src.zip">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:platform:/resource/EmergencyLanding/src/res/libs/javadocs/lwjgl-docs.zip!/javadoc"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

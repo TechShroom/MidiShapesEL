@@ -11,6 +11,8 @@ import javax.sound.midi.ShortMessage;
 
 import com.k.midishapes.interfacing.DisplayableInstrument;
 
+import emergencylanding.k.library.main.KMain;
+
 public class MidiDisplayer {
     static HashMap<Integer, DisplayableInstrument<?>> itod = new HashMap<Integer, DisplayableInstrument<?>>();
     private static int nextAvaliable = 0;
@@ -58,6 +60,9 @@ public class MidiDisplayer {
         synchronized (lk) {
             Collection<DisplayableInstrument<?>> vals = itod.values();
             for (DisplayableInstrument<?> di : vals) {
+                if(((MidiMain)KMain.getInst()).reboot) {
+                    break;
+                }
                 di.draw();
             }
         }
