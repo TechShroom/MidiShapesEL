@@ -307,7 +307,6 @@ public class MidiPlayer {
             seq = MidiSystem.getSequencer();
             file = MidiReader.decodedSequence();
             s.open();
-            s.loadAllInstruments(s.getDefaultSoundbank());
             seq.open();
             seq.setSequence(file);
         }
