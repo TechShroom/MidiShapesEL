@@ -204,5 +204,6 @@ public class MidiMain extends KMain implements KeyListener {
                 rem.add(m);
             }
         }
+        mods.removeAll(rem);
     }
 }
