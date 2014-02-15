@@ -100,6 +100,7 @@ public class MidiPlayer {
         public long tick;
         public static boolean running, abort;
         protected static Receiver recv = null;
+        private static Synthesizer syn = null;
 
         Sequence s = null;
         HashMap<Track, SubHack> subs = new HashMap<Track, SubHack>();
@@ -131,7 +132,8 @@ public class MidiPlayer {
                 if (recv != null) {
                     recv.close();
                 }
-                recv = MidiReader.synth.getReceiver();
+                syn = MidiReader.openSynth();
+                recv = syn.getReceiver();
                 if (recv_not_open(recv) && recv instanceof MidiDeviceReceiver) {
                     ((MidiDeviceReceiver) recv).getMidiDevice().open();
                 } else if (recv_not_open(recv)) {
@@ -210,6 +212,7 @@ public class MidiPlayer {
             if (abort) {
                 recv.close();
                 recv = null;
+                MidiReader.closeSynth(syn);
                 s = null;
             }
             running = true;
@@ -243,6 +246,7 @@ public class MidiPlayer {
             } while (running && !abort);
             recv.close();
             recv = null;
+            MidiReader.closeSynth(syn);
             s = null;
         }
 
@@ -291,17 +295,14 @@ public class MidiPlayer {
 
     private static class MidiPlay {
         public static final MidiPlay EXCEPTION = new MidiPlay(true);
-        Synthesizer s = null;
         Sequencer seq = null;
         Sequence file = null;
         private long micro = -1;
         private boolean exceptionMode;
 
         public MidiPlay() throws Exception {
-            s = MidiReader.synth;
             seq = MidiSystem.getSequencer();
             file = MidiReader.decodedSequence();
-            s.open();
             seq.open();
             seq.setSequence(file);
         }
@@ -364,7 +365,6 @@ public class MidiPlayer {
             stop0(false);
             seq.setMicrosecondPosition(0);
             seq.close();
-            s.close();
         }
     }
 

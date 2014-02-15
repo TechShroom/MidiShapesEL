@@ -15,10 +15,31 @@ import k.core.util.Helper.ProgramProps;
 
 public class MidiReader {
     public static File midi = null;
-    public static Synthesizer synth = null;
+    private static Synthesizer synth;
 
     public static void init() {
         midi = new File(ProgramProps.getProperty("file"));
+        if (ProgramProps.hasKey("repeat")) {
+            MidiPlayer.repeat = true;
+        }
+    }
+
+    public static Sequence decodedSequence() throws InvalidMidiDataException,
+            IOException {
+        if (midi == null || midi.equals(""))
+            return new Sequence(Sequence.PPQ, 4);
+        return MidiSystem.getSequence(midi);
+    }
+
+    public static void exit() {
+        midi = null;
+        if (synth != null && synth.isOpen()) {
+            synth.close();
+            synth = null;
+        }
+    }
+
+    public static Synthesizer openSynth() {
         try {
             synth = MidiSystem.getSynthesizer();
             Info[] info = MidiSystem.getMidiDeviceInfo();
@@ -53,21 +74,13 @@ public class MidiReader {
                 e.printStackTrace();
             }
         }
-        if (ProgramProps.hasKey("repeat")) {
-            MidiPlayer.repeat = true;
+        return synth;
+    }
+
+    public static void closeSynth(Synthesizer s) {
+        s.close();
+        if(s == synth) {
+            synth = null;
         }
     }
-
-    public static Sequence decodedSequence() throws InvalidMidiDataException,
-            IOException {
-        if (midi == null || midi.equals(""))
-            return new Sequence(Sequence.PPQ, 4);
-        return MidiSystem.getSequence(midi);
-    }
-
-    public static void exit() {
-        midi = null;
-        synth = null;
-    }
-
 }
