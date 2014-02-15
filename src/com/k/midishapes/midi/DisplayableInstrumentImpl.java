@@ -13,7 +13,7 @@ import emergencylanding.k.library.lwjgl.render.VertexData;
  * The standard implementation.
  * 
  * @author Kenzie Togami
- *
+ * 
  */
 public class DisplayableInstrumentImpl extends
         DefaultDisplayableInstrument<DisplayableInstrumentImpl> {

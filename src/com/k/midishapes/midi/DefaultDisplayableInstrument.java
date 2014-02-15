@@ -10,8 +10,9 @@ import emergencylanding.k.library.lwjgl.tex.ELTexture;
 public abstract class DefaultDisplayableInstrument<T extends DefaultDisplayableInstrument<T>>
         implements DisplayableInstrument<T> {
     static void init() {
-        
+
     }
+
     /**
      * The constant representing the number of notes a MIDI supports
      */

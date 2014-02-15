@@ -60,7 +60,7 @@ public class MidiDisplayer {
         synchronized (lk) {
             Collection<DisplayableInstrument<?>> vals = itod.values();
             for (DisplayableInstrument<?> di : vals) {
-                if(((MidiMain)KMain.getInst()).reboot) {
+                if (((MidiMain) KMain.getInst()).reboot) {
                     break;
                 }
                 di.draw();
