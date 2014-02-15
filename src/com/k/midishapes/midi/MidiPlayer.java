@@ -162,7 +162,7 @@ public class MidiPlayer {
                         System.err.println(index);
                     }
                 };
-                new Thread(r, "TrackLoader").start();
+                new Thread(r, "TrackLoader" + trks).start();
                 trks++;
             }
             while (EventCache.complete.get() < trks) {
