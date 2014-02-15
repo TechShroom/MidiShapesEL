@@ -125,6 +125,7 @@ public class MidiPlayer {
         }
 
         public DisplayHackThread(Sequence file) {
+            super("DisplayHackThread");
             s = file;
             subs.clear();
             EventCache.complete.set(0);
