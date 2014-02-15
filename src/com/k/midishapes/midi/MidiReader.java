@@ -49,6 +49,8 @@ public class MidiReader {
             try {
                 synth.loadAllInstruments(sf2bank);
             } catch (Exception e) {
+                System.err.println("Couldn't load some instruments: ");
+                e.printStackTrace();
             }
         }
         if (ProgramProps.hasKey("repeat")) {
