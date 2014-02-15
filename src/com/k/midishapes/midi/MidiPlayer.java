@@ -333,7 +333,7 @@ public class MidiPlayer {
             DisplayHackThread.running = repeat && normal;
             DisplayHackThread.pause = repeat && normal
                     && DisplayHackThread.pause;
-            MidiDisplayer.stop(repeat && normal);
+            MidiDisplayer.stop(normal);
             if (repeat && normal) {
                 DisplayHackThread.repeat();
             } else {
