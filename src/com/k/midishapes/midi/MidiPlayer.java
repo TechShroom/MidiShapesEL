@@ -152,6 +152,7 @@ public class MidiPlayer {
                 if (t.size() <= 1) {
                     continue;
                 }
+                final int currtrks = trks;
                 Runnable r = new Runnable() {
                     @Override
                     public void run() {
@@ -159,7 +160,7 @@ public class MidiPlayer {
                         subs.get(t).ec = new EventCache(t);
                         subs.get(t).t = t;
                         index.incrementAndGet();
-                        System.err.println(index);
+                        System.err.println("Track " + currtrks + " completed.");
                     }
                 };
                 new Thread(r, "TrackLoader" + trks).start();
