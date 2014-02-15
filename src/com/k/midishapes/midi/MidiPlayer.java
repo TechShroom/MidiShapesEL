@@ -175,11 +175,6 @@ public class MidiPlayer {
             System.err.println("[DisplayHackThread] Created " + index + "/"
                     + trks + " tracks. (reported that we completed "
                     + EventCache.complete + ")");
-            try {
-                Thread.sleep(10);
-            } catch (InterruptedException is) {
-            }
-            // System.err.println("[DisplayHackThread] EventCache init complete!");
             tc = new TempoCache(file);
             tc.refresh(file);
         }
