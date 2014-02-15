@@ -306,9 +306,8 @@ public class MidiPlayer {
             seq.setSequence(file);
         }
 
-        private MidiPlay(boolean foo) {
-            s = MidiReader.synth;
-            exceptionMode = true;
+        private MidiPlay(boolean excep) {
+            exceptionMode = excep;
         }
 
         public void run() {
