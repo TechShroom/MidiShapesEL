@@ -1,6 +1,7 @@
 package com.k.midishapes.midi;
 
 import java.awt.Dimension;
+import java.awt.Frame;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.lang.reflect.Method;
@@ -10,6 +11,7 @@ import java.util.List;
 
 import javax.sound.midi.MidiSystem;
 import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import k.core.util.core.Helper.ProgramProps;
@@ -116,14 +118,8 @@ public class MidiMain extends KMain implements KeyListener {
             }
         }
         if (!ProgramProps.hasKey("soundbank")) {
-            JFileChooser jfc = new JFileChooser();
-            jfc.removeChoosableFileFilter(jfc.getAcceptAllFileFilter());
-            jfc.addChoosableFileFilter(new FileNameExtensionFilter(
-                    "SoundFont2 Files", "sf2"));
-            jfc.showOpenDialog(null);
-            if (jfc.getSelectedFile() != null) {
-                ProgramProps.acceptPair("soundbank", jfc.getSelectedFile()
-                        .getAbsolutePath());
+            if (!askForSB()) {
+                ProgramProps.acceptPair("soundbank", "");
             }
         }
         // prevents sync issues
@@ -139,10 +135,29 @@ public class MidiMain extends KMain implements KeyListener {
         jfc.removeChoosableFileFilter(jfc.getAcceptAllFileFilter());
         jfc.addChoosableFileFilter(new FileNameExtensionFilter("MIDI Files",
                 "mid", "midi"));
-        // WUtils.windows_safe_JFC(jfc, JFileChooser.OPEN_DIALOG);
-        jfc.showOpenDialog(null);
+        // apply always-on-top
+        Frame f = JOptionPane.getRootFrame();
+        f.setAlwaysOnTop(true);
+        jfc.showOpenDialog(f);
         if (jfc.getSelectedFile() != null) {
             ProgramProps.acceptPair("file", jfc.getSelectedFile()
+                    .getAbsolutePath());
+            return true;
+        }
+        return false;
+    }
+
+    private boolean askForSB() {
+        JFileChooser jfc = new JFileChooser();
+        jfc.removeChoosableFileFilter(jfc.getAcceptAllFileFilter());
+        jfc.addChoosableFileFilter(new FileNameExtensionFilter(
+                "SoundFont2 Files", "sf2"));
+        // apply always-on-top
+        Frame f = JOptionPane.getRootFrame();
+        f.setAlwaysOnTop(true);
+        jfc.showOpenDialog(f);
+        if (jfc.getSelectedFile() != null) {
+            ProgramProps.acceptPair("soundbank", jfc.getSelectedFile()
                     .getAbsolutePath());
             return true;
         }
@@ -172,6 +187,12 @@ public class MidiMain extends KMain implements KeyListener {
                 }
                 if (key == KeyEvent.VK_F) {
                     boolean success = askForFile();
+                    if (success) {
+                        reboot = true;
+                    }
+                }
+                if (key == KeyEvent.VK_S) {
+                    boolean success = askForSB();
                     if (success) {
                         reboot = true;
                     }
