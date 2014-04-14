@@ -151,6 +151,8 @@ public class MidiPlayer {
             }
             final AtomicInteger index = new AtomicInteger(0);
             int trks = 0;
+            System.err
+                    .println("Loading " + s.getTracks().length + " track(s).");
             for (final Track t : s.getTracks()) {
                 if (t.size() <= 1) {
                     continue;

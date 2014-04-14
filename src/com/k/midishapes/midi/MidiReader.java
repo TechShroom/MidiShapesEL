@@ -11,7 +11,7 @@ import javax.sound.midi.Sequence;
 import javax.sound.midi.Soundbank;
 import javax.sound.midi.Synthesizer;
 
-import k.core.util.Helper.ProgramProps;
+import k.core.util.core.Helper.ProgramProps;
 
 public class MidiReader {
     public static File midi = null;

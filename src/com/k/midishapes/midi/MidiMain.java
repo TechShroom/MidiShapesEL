@@ -12,7 +12,7 @@ import javax.sound.midi.MidiSystem;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
-import k.core.util.Helper.ProgramProps;
+import k.core.util.core.Helper.ProgramProps;
 
 import org.lwjgl.opengl.Display;
 
