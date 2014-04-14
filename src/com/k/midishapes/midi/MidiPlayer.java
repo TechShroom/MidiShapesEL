@@ -181,7 +181,8 @@ public class MidiPlayer {
                     + trks + " tracks. (reported that we completed "
                     + EventCache.complete + ")");
             tc = new TempoCache(file);
-            tc.refresh(file);
+            // don't twice it
+            // tc.refresh(file);
         }
 
         private boolean recv_not_open(Receiver r) {

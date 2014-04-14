@@ -79,7 +79,6 @@ public class DIGUI implements Runnable {
 
     Color retVal = null;
 
-    @SuppressWarnings("deprecation")
     protected Color showColorChoices(final JColorChooser jcc) {
         retVal = jcc.getColor();
         JDialog dialog = JColorChooser.createDialog(null, "Choose a color:",
@@ -91,7 +90,9 @@ public class DIGUI implements Runnable {
                         retVal = jcc.getColor();
                     }
                 }, null);
-        dialog.show();
+        // NB if the dialog won't work, revert to deprecated show
+        // dialog.show();
+        dialog.setVisible(true);
         return retVal;
     }
 
