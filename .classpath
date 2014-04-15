@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" path="resource"/>
 	<classpathentry exported="true" kind="lib" path="AppleJavaExtensions.jar"/>
 	<classpathentry exported="true" kind="lib" path="jinput.jar"/>
 	<classpathentry exported="true" kind="lib" path="slick-util.jar" sourcepath="/LetsTryLWJGL/lib/lwjgl-source-2.9.0.zip"/>

@@ -4,6 +4,7 @@ import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.io.IOException;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.ArrayList;
@@ -27,6 +28,7 @@ import emergencylanding.k.library.lwjgl.DisplayLayer;
 import emergencylanding.k.library.lwjgl.control.Keys;
 import emergencylanding.k.library.lwjgl.tex.ELTexture;
 import emergencylanding.k.library.main.KMain;
+import emergencylanding.k.library.util.LUtils;
 
 public class MidiMain extends KMain implements KeyListener {
     public static void main(String[] args) {
@@ -78,6 +80,18 @@ public class MidiMain extends KMain implements KeyListener {
     }
 
     boolean reboot;
+    private JFileChooser sbfc = new JFileChooser(), ffc = new JFileChooser();
+
+    {
+        JFileChooser jfc = ffc;
+        jfc.removeChoosableFileFilter(jfc.getAcceptAllFileFilter());
+        jfc.addChoosableFileFilter(new FileNameExtensionFilter("MIDI Files",
+                "mid", "midi"));
+        jfc = sbfc;
+        jfc.removeChoosableFileFilter(jfc.getAcceptAllFileFilter());
+        jfc.addChoosableFileFilter(new FileNameExtensionFilter(
+                "SoundFont2 Files", "sf2"));
+    }
 
     @Override
     public void onDisplayUpdate(int delta) {
@@ -109,6 +123,12 @@ public class MidiMain extends KMain implements KeyListener {
             } catch (Exception e) {
             }
         }
+        try {
+            LUtils.setIcon(LUtils.getInputStream(LUtils.TOP_LEVEL
+                    + "/resource/img/midishapesFIN.png"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         if (args.length > 0 && args.length < 2 && !ProgramProps.hasKey("file")) {
             ProgramProps.acceptPair("file", args[0]);
         }
@@ -131,15 +151,12 @@ public class MidiMain extends KMain implements KeyListener {
     }
 
     private boolean askForFile() {
-        JFileChooser jfc = new JFileChooser();
-        jfc.removeChoosableFileFilter(jfc.getAcceptAllFileFilter());
-        jfc.addChoosableFileFilter(new FileNameExtensionFilter("MIDI Files",
-                "mid", "midi"));
+        JFileChooser jfc = ffc;
         // apply always-on-top
         Frame f = JOptionPane.getRootFrame();
         f.setAlwaysOnTop(true);
-        jfc.showOpenDialog(f);
-        if (jfc.getSelectedFile() != null) {
+        int yes = jfc.showOpenDialog(f);
+        if (yes != JFileChooser.CANCEL_OPTION && jfc.getSelectedFile() != null) {
             ProgramProps.acceptPair("file", jfc.getSelectedFile()
                     .getAbsolutePath());
             return true;
@@ -148,15 +165,12 @@ public class MidiMain extends KMain implements KeyListener {
     }
 
     private boolean askForSB() {
-        JFileChooser jfc = new JFileChooser();
-        jfc.removeChoosableFileFilter(jfc.getAcceptAllFileFilter());
-        jfc.addChoosableFileFilter(new FileNameExtensionFilter(
-                "SoundFont2 Files", "sf2"));
+        JFileChooser jfc = sbfc;
         // apply always-on-top
         Frame f = JOptionPane.getRootFrame();
         f.setAlwaysOnTop(true);
-        jfc.showOpenDialog(f);
-        if (jfc.getSelectedFile() != null) {
+        int yes = jfc.showOpenDialog(f);
+        if (yes != JFileChooser.CANCEL_OPTION && jfc.getSelectedFile() != null) {
             ProgramProps.acceptPair("soundbank", jfc.getSelectedFile()
                     .getAbsolutePath());
             return true;
