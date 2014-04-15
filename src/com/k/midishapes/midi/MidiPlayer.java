@@ -358,18 +358,20 @@ public class MidiPlayer {
             if (repeat && normal) {
                 DisplayHackThread.repeat();
             } else {
-                try {
-                    DisplayHackThread.abort = true;
-                    DisplayHackThread.inst.join(100);
-                } catch (InterruptedException e) {
-                    DisplayHackThread.inst.interrupt();
+                if (DisplayHackThread.inst != null) {
+                    try {
+                        DisplayHackThread.abort = true;
+                        DisplayHackThread.inst.join(100);
+                    } catch (InterruptedException e) {
+                        DisplayHackThread.inst.interrupt();
+                    }
+                    if (DisplayHackThread.inst.isAlive()) {
+                        DisplayHackThread.inst.interrupt();
+                    }
+                    // reset state
+                    DisplayHackThread.running = DisplayHackThread.abort = false;
+                    DisplayHackThread.inst = null;
                 }
-                if (DisplayHackThread.inst.isAlive()) {
-                    DisplayHackThread.inst.interrupt();
-                }
-                // reset state
-                DisplayHackThread.running = DisplayHackThread.abort = false;
-                DisplayHackThread.inst = null;
                 micro = -1;
             }
         }
