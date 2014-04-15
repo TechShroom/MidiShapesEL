@@ -111,14 +111,20 @@ public class MidiPlayer {
         public static void begin(Sequence file) {
             if (inst != null) {
                 try {
+                    // psh, forgot to abort
+                    abort = true;
                     inst.join(10);
+                    System.err.println("joined");
                 } catch (InterruptedException e) {
                     inst.interrupt();
                 }
                 if (inst.isAlive()) {
                     inst.interrupt();
                 }
+                inst = null;
             }
+            // remove instruments
+            MidiDisplayer.stop(false);
             inst = new DisplayHackThread(file);
             inst.setDaemon(true);
             inst.start();
@@ -139,7 +145,7 @@ public class MidiPlayer {
                     ((MidiDeviceReceiver) recv).getMidiDevice().open();
                 } else if (recv_not_open(recv)) {
                     throw new IllegalStateException(
-                            "Reciver not opened, and not openable: "
+                            "Receiver not opened, and not openable: "
                                     + recv.getClass());
                 }
             } catch (MidiUnavailableException e1) {
@@ -211,14 +217,16 @@ public class MidiPlayer {
             } catch (InterruptedException is) {
             }
             FPS.init(1, FPS.micro);
-            System.err.println("DisplayHackThread is going to run "
-                    + subs.size() + " tracks.");
             if (abort) {
                 recv.close();
                 recv = null;
                 MidiReader.closeSynth(syn);
                 s = null;
+                System.err.println("Aborted.");
+                return;
             }
+            System.err.println("DisplayHackThread is going to run "
+                    + subs.size() + " tracks.");
             running = true;
             FPS.getDelta(1, FPS.micro);
             tick = 0;
@@ -229,6 +237,11 @@ public class MidiPlayer {
                 micro += FPS.getDelta(1, FPS.micro);
                 while (micro >= micro_tick) {
                     tick++;
+                    if (s == null) {
+                        // a weird state, but okay
+                        abort = true;
+                        continue;
+                    }
                     if (tick > s.getTickLength()) {
                         mpt.stop0();
                         break;
@@ -248,6 +261,8 @@ public class MidiPlayer {
                     }
                 }
             } while (running && !abort);
+            abort = false;
+            running = false;
             recv.close();
             recv = null;
             MidiReader.closeSynth(syn);
@@ -282,7 +297,8 @@ public class MidiPlayer {
     }
 
     public static void stop() {
-        mpt.stop0();
+        // not normal: repeat shouldn't go through
+        mpt.stop0(false);
     }
 
     public static void pause() {
@@ -338,11 +354,12 @@ public class MidiPlayer {
             DisplayHackThread.running = repeat && normal;
             DisplayHackThread.pause = repeat && normal
                     && DisplayHackThread.pause;
-            MidiDisplayer.stop(normal);
+            MidiDisplayer.stop(true);
             if (repeat && normal) {
                 DisplayHackThread.repeat();
             } else {
                 try {
+                    DisplayHackThread.abort = true;
                     DisplayHackThread.inst.join(100);
                 } catch (InterruptedException e) {
                     DisplayHackThread.inst.interrupt();
@@ -350,6 +367,10 @@ public class MidiPlayer {
                 if (DisplayHackThread.inst.isAlive()) {
                     DisplayHackThread.inst.interrupt();
                 }
+                // reset state
+                DisplayHackThread.running = DisplayHackThread.abort = false;
+                DisplayHackThread.inst = null;
+                micro = -1;
             }
         }
 

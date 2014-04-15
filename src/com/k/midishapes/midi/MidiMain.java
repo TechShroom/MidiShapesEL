@@ -199,6 +199,8 @@ public class MidiMain extends KMain implements KeyListener {
                 }
                 if (key == KeyEvent.VK_R) {
                     MidiPlayer.repeat = !MidiPlayer.repeat;
+                    System.err.println("Repeat is now "
+                            + (MidiPlayer.repeat ? "on" : "off") + ".");
                 }
             }
         };
