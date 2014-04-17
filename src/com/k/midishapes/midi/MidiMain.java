@@ -66,7 +66,7 @@ public class MidiMain extends KMain implements KeyListener {
             while (!Display.isCloseRequested()) {
                 DisplayLayer.loop(120);
             }
-            Display.destroy();
+            DisplayLayer.destroy();
         } catch (Exception e) {
             e.printStackTrace();
             MidiReader.exit();
