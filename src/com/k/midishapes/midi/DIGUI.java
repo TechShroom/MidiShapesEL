@@ -4,6 +4,9 @@ import java.awt.Color;
 import java.awt.Dialog;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.util.Arrays;
 
 import javax.swing.AbstractAction;
 import javax.swing.JButton;
@@ -11,6 +14,7 @@ import javax.swing.JColorChooser;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
 
+import k.core.util.gui.SwingAWTUtils;
 import emergencylanding.k.library.lwjgl.tex.ColorTexture;
 import emergencylanding.k.library.lwjgl.tex.ELTexture;
 
@@ -72,9 +76,13 @@ public class DIGUI implements Runnable {
         JDialog dialog = new JDialog((Dialog) null, "Options for Track", true);
         dialog.add(disp_panel);
         dialog.pack();
+        dialog.setLocationRelativeTo(null);
         dialog.setAlwaysOnTop(false);
+        dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+        SwingAWTUtils.attachDisposeOnClose(dialog);
+        // NB setVisible is last on list because it blocks.
         dialog.setVisible(true);
-        dialog.paintAll(dialog.getGraphics());
+        dialog.dispose();
     }
 
     Color retVal = null;
@@ -91,6 +99,7 @@ public class DIGUI implements Runnable {
                     }
                 }, null);
         // NB if the dialog won't work, revert to deprecated show
+        // currently setVisible() is just a pass -> show()
         // dialog.show();
         dialog.setVisible(true);
         return retVal;
