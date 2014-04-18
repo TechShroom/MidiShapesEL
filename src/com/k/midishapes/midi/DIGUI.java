@@ -4,9 +4,6 @@ import java.awt.Color;
 import java.awt.Dialog;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.util.Arrays;
 
 import javax.swing.AbstractAction;
 import javax.swing.JButton;
@@ -78,7 +75,7 @@ public class DIGUI implements Runnable {
         dialog.pack();
         dialog.setLocationRelativeTo(null);
         dialog.setAlwaysOnTop(false);
-        dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+        dialog.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
         SwingAWTUtils.attachDisposeOnClose(dialog);
         // NB setVisible is last on list because it blocks.
         dialog.setVisible(true);
