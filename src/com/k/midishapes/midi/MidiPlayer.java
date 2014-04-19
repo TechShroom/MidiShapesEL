@@ -80,7 +80,6 @@ public class MidiPlayer {
             if (exceptionMode) {
                 return;
             }
-            DisplayHackThread.running = repeat && normal;
             DisplayHackThread.pause = repeat && normal
                     && DisplayHackThread.pause;
             MidiDisplayer.stop(true);
@@ -98,7 +97,9 @@ public class MidiPlayer {
                         DisplayHackThread.inst.interrupt();
                     }
                     // reset state
-                    DisplayHackThread.running = DisplayHackThread.abort = false;
+                    DisplayHackThread.inst.seqr.stop();
+                    DisplayHackThread.inst.seqr.setMicrosecondPosition(0);
+                    DisplayHackThread.abort = false;
                     DisplayHackThread.inst = null;
                 }
                 micro = -1;
@@ -125,7 +126,7 @@ public class MidiPlayer {
     }
 
     public static boolean isPlaying() {
-        return DisplayHackThread.running;
+        return DisplayHackThread.inst.isAlive();
     }
 
 }

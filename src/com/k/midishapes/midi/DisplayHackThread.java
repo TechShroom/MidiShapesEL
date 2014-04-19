@@ -15,10 +15,10 @@ import com.sun.media.sound.AutoConnectSequencer;
 public class DisplayHackThread extends Thread {
     public TempoCache tc;
     public long tick;
-    public static boolean running, abort;
+    public static boolean abort;
     protected static Receiver recv = null;
     private Sequence s = null;
-    private Sequencer seqr = null;
+    Sequencer seqr = null;
     public static boolean pause;
     static DisplayHackThread inst = null;
 
