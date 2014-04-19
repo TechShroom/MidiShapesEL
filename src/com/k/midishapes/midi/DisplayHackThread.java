@@ -47,6 +47,10 @@ public class DisplayHackThread extends Thread {
     public DisplayHackThread(Sequence file) {
         super("DisplayHackThread");
         s = file;
+    }
+
+    @Override
+    public void run() {
         try {
             if (recv != null) {
                 recv.close();
@@ -75,10 +79,6 @@ public class DisplayHackThread extends Thread {
         if (abort) {
             return;
         }
-    }
-
-    @Override
-    public void run() {
         seqr.start();
     }
 

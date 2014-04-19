@@ -48,15 +48,16 @@ public class MidiReader {
 
     public static Synthesizer openSynth() {
         try {
-            synth = MidiSystem.getSynthesizer();
             Info[] info = MidiSystem.getMidiDeviceInfo();
-            if (!synth.getDeviceInfo().getName().contains("Gervill")) {
-                for (Info i : info) {
-                    System.err.println("Checking info " + i + " v"
-                            + i.getVersion() + ":" + i.getDescription());
-                    if (i.getName().contains("Gervill")) {
-                        synth = (Synthesizer) MidiSystem.getMidiDevice(i);
+            for (Info i : info) {
+                System.err.println("Checking info " + i + " v" + i.getVersion()
+                        + ":" + i.getDescription());
+                if (i.getName().contains("Gervill")) {
+                    synth = (Synthesizer) MidiSystem.getMidiDevice(i);
+                    if (userRecvI == null) {
+                        userRecvI = i;
                     }
+                    break;
                 }
             }
         } catch (MidiUnavailableException e1) {
@@ -86,10 +87,6 @@ public class MidiReader {
 
     public static void user_recv_req() {
         Info[] midiInfo = MidiSystem.getMidiDeviceInfo();
-        for (Info i : midiInfo) {
-            System.err.printf("%s from %s version %s (%s)\n", i.getName(),
-                    i.getVendor(), i.getVersion(), i.getDescription());
-        }
         Info def = userRecvI;
         if (def == null) {
             def = midiInfo[0];
@@ -116,7 +113,7 @@ public class MidiReader {
         return recv;
     }
 
-    private static boolean recv_not_open(Receiver r) {
+    public static boolean recv_not_open(Receiver r) {
         try {
             r.send(MidiUtils.allNotesOff(0), -1);
             return false;

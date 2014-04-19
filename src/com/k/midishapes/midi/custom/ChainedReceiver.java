@@ -1,5 +1,7 @@
 package com.k.midishapes.midi.custom;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.MidiMessage;
 import javax.sound.midi.Receiver;
@@ -36,6 +38,7 @@ public class ChainedReceiver implements Receiver {
     }
 
     private Receiver chain = null;
+    volatile AtomicBoolean closed = new AtomicBoolean(false);
 
     public ChainedReceiver(Receiver chain) {
         this.chain = chain;
@@ -50,11 +53,22 @@ public class ChainedReceiver implements Receiver {
             // allow for rebinding
             mapping[sm.getChannel()] = MidiDisplayer.sendToInstrument(sm, id);
         }
-        chain.send(message, timeStamp);
+        // NB make sure all messages go through to MD
+        if (!closed.get()) {
+            try {
+                chain.send(message, timeStamp);
+            } catch (Exception e) {
+                System.err.println("!!IGNORE THIS ERROR!!");
+                e.printStackTrace();
+                System.err.println("!!-------END-------!!");
+                closed.set(true);
+            }
+        }
     }
 
     @Override
     public void close() {
+        closed.set(true);
         chain.close();
     }
 

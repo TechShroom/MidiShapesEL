@@ -31,7 +31,7 @@ public class MidiPlayer {
     }
 
     public static void pause() {
-        if (mpt.micro > -1) {
+        if (mpt.paused) {
             mpt.run();
         } else {
             mpt.pause();
@@ -46,8 +46,7 @@ public class MidiPlayer {
         public static final MidiPlay EXCEPTION = new MidiPlay(true);
         Sequencer seq = null;
         Sequence file = null;
-        private long micro = -1;
-        private boolean exceptionMode;
+        boolean exceptionMode, paused;
 
         public MidiPlay() throws Exception {
             seq = MidiSystem.getSequencer();
@@ -64,9 +63,9 @@ public class MidiPlayer {
             if (exceptionMode) {
                 return;
             }
-            if (micro > -1) {
-                DisplayHackThread.pause = false;
-                micro = -1;
+            if (paused) {
+                DisplayHackThread.inst.seqr.start();
+                paused = false;
             } else {
                 DisplayHackThread.begin(file);
             }
@@ -80,8 +79,7 @@ public class MidiPlayer {
             if (exceptionMode) {
                 return;
             }
-            DisplayHackThread.pause = repeat && normal
-                    && DisplayHackThread.pause;
+            paused = repeat && normal && paused;
             MidiDisplayer.stop(true);
             if (repeat && normal) {
                 DisplayHackThread.repeat();
@@ -102,7 +100,6 @@ public class MidiPlayer {
                     DisplayHackThread.abort = false;
                     DisplayHackThread.inst = null;
                 }
-                micro = -1;
             }
         }
 
@@ -110,9 +107,8 @@ public class MidiPlayer {
             if (exceptionMode) {
                 return;
             }
-            micro = DisplayHackThread.inst.tick;
-            DisplayHackThread.pause = true;
-            MidiDisplayer.stop(true);
+            DisplayHackThread.inst.seqr.stop();
+            paused = true;
         }
 
         public void exit() {
@@ -126,7 +122,11 @@ public class MidiPlayer {
     }
 
     public static boolean isPlaying() {
-        return DisplayHackThread.inst.isAlive();
+        if (DisplayHackThread.inst == null
+                || DisplayHackThread.inst.seqr == null) {
+            return false;
+        }
+        // we are paused or running (playing) when we have an inst and seqr
+        return true;
     }
-
 }
