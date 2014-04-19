@@ -12,7 +12,7 @@ import java.util.List;
 
 import javax.sound.midi.MidiSystem;
 import javax.swing.JFileChooser;
-import javax.swing.JOptionPane;
+import javax.swing.JFrame;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import k.core.util.core.Helper.ProgramProps;
@@ -21,6 +21,7 @@ import org.lwjgl.opengl.Display;
 
 import com.k.midishapes.interfacing.DIMod;
 import com.k.midishapes.interfacing.DisplayableInstrument;
+import com.k.midishapes.midi.custom.ChainedReceiver;
 
 import emergencylanding.k.exst.mods.IMod;
 import emergencylanding.k.library.debug.FPS;
@@ -104,7 +105,8 @@ public class MidiMain extends KMain implements KeyListener {
 
     private void reboot() {
         MidiReader.exit();
-        MidiDisplayer.exit();
+        // hum....
+        MidiDisplayer.stop(true);
         MidiPlayer.exit();
         if (!KMain.getDisplayThread().equals(Thread.currentThread())) {
             throw new IllegalStateException("Must init in display thread");
@@ -146,6 +148,7 @@ public class MidiMain extends KMain implements KeyListener {
         DefaultDisplayableInstrument.init();
         MidiReader.init();
         MidiDisplayer.init();
+        ChainedReceiver.init();
         MidiPlayer.start();
         Keys.registerListener(this, false);
     }
@@ -153,9 +156,10 @@ public class MidiMain extends KMain implements KeyListener {
     private boolean askForFile() {
         JFileChooser jfc = ffc;
         // apply always-on-top
-        Frame f = JOptionPane.getRootFrame();
+        Frame f = new JFrame();
         f.setAlwaysOnTop(true);
         int yes = jfc.showOpenDialog(f);
+        f.dispose();
         if (yes != JFileChooser.CANCEL_OPTION && jfc.getSelectedFile() != null) {
             ProgramProps.acceptPair("file", jfc.getSelectedFile()
                     .getAbsolutePath());
@@ -167,9 +171,10 @@ public class MidiMain extends KMain implements KeyListener {
     private boolean askForSB() {
         JFileChooser jfc = sbfc;
         // apply always-on-top
-        Frame f = JOptionPane.getRootFrame();
+        Frame f = new JFrame();
         f.setAlwaysOnTop(true);
         int yes = jfc.showOpenDialog(f);
+        f.dispose();
         if (yes != JFileChooser.CANCEL_OPTION && jfc.getSelectedFile() != null) {
             ProgramProps.acceptPair("soundbank", jfc.getSelectedFile()
                     .getAbsolutePath());
@@ -215,6 +220,10 @@ public class MidiMain extends KMain implements KeyListener {
                     MidiPlayer.repeat = !MidiPlayer.repeat;
                     System.err.println("Repeat is now "
                             + (MidiPlayer.repeat ? "on" : "off") + ".");
+                }
+                if (key == KeyEvent.VK_U) {
+                    MidiReader.user_recv_req();
+                    reboot = true;
                 }
             }
         };

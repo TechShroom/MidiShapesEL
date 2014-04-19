@@ -11,7 +11,9 @@ import javax.sound.midi.MidiUnavailableException;
 import javax.sound.midi.Receiver;
 import javax.sound.midi.Transmitter;
 
-public class CustomReceiver implements Receiver {
+import com.sun.media.sound.MidiDeviceReceiver;
+
+public class CustomReceiver implements MidiDeviceReceiver {
 
     private List<MidiMessage> m;
     private MidiDevice receivedevice;
@@ -24,11 +26,15 @@ public class CustomReceiver implements Receiver {
         receivedevice = getMidiDevice(rname, true);
         m = new ArrayList<MidiMessage>();
         try {
-            receivedevice.open();
-            transmitdevice.open();
-            this.receiver = receivedevice.getReceiver();
-            this.transmitter = transmitdevice.getTransmitter();
-            this.transmitter.setReceiver(this);
+            if (receivedevice != null) {
+                receivedevice.open();
+                this.receiver = receivedevice.getReceiver();
+            }
+            if (transmitdevice != null) {
+                transmitdevice.open();
+                this.transmitter = transmitdevice.getTransmitter();
+                this.transmitter.setReceiver(this);
+            }
         } catch (MidiUnavailableException e) {
             close();
             e.printStackTrace();
@@ -60,14 +66,18 @@ public class CustomReceiver implements Receiver {
 
     @Override
     public void close() {
-        if (receiver != null)
+        if (receiver != null) {
             receiver.close();
-        if (transmitter != null)
+        }
+        if (transmitter != null) {
             transmitter.close();
-        if (transmitdevice != null)
+        }
+        if (transmitdevice != null) {
             transmitdevice.close();
-        if (receivedevice != null)
+        }
+        if (receivedevice != null) {
             receivedevice.close();
+        }
     }
 
     @Override
@@ -77,12 +87,13 @@ public class CustomReceiver implements Receiver {
     }
 
     public void sendSingleMessage(MidiMessage msg, long timeStamp) {
-        receiver.send(msg, timeStamp);
+        send(msg, timeStamp);
     }
 
     public void sendAll() {
-        for (MidiMessage mm : m)
-            receiver.send(mm, -1);
+        for (MidiMessage mm : m) {
+            sendSingleMessage(mm, -1);
+        }
     }
 
     public void add(MidiMessage msg) {
@@ -91,5 +102,10 @@ public class CustomReceiver implements Receiver {
 
     public void remove(MidiMessage msg) {
         m.remove(msg);
+    }
+
+    @Override
+    public MidiDevice getMidiDevice() {
+        return receivedevice;
     }
 }

@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.MetaMessage;
 import javax.sound.midi.MidiEvent;
 import javax.sound.midi.MidiMessage;
@@ -393,5 +394,16 @@ public class MidiUtils {
             }
         }
         return 0;
+    }
+
+    public static ShortMessage allNotesOff(int channel) {
+        ShortMessage str = new ShortMessage();
+        try {
+            str.setMessage(MidiPlayer.CONTROL_CHANGE, channel,
+                    MidiPlayer.ALL_NOTES_OFF, 0);
+        } catch (InvalidMidiDataException e) {
+            e.printStackTrace();
+        }
+        return str;
     }
 }

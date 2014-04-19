@@ -133,8 +133,9 @@ public class MidiDisplayer {
             if (keep) {
                 return;
             }
-            itod.clear();
-            nextAvaliable = 0;
+            // TODO remove, we shouldn't kill them anymore
+            // itod.clear();
+            // nextAvaliable = 0;
         }
     }
 
