@@ -11,7 +11,7 @@ import javax.sound.midi.MidiUnavailableException;
 import javax.sound.midi.Receiver;
 import javax.sound.midi.Transmitter;
 
-import com.sun.media.sound.MidiDeviceReceiver;
+import g.com.sun.media.sound.MidiDeviceReceiver;
 
 public class CustomReceiver implements MidiDeviceReceiver {
 
