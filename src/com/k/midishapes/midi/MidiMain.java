@@ -7,6 +7,7 @@ import java.awt.event.KeyListener;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.net.URL;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -16,6 +17,7 @@ import javax.sound.midi.MidiSystem;
 import javax.sound.midi.Sequencer;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import k.core.util.core.Helper.ProgramProps;
@@ -184,6 +186,19 @@ public class MidiMain extends KMain implements KeyListener {
         // apply always-on-top
         Frame f = new JFrame();
         f.setAlwaysOnTop(true);
+        if (shifty) {
+            // use a inputboxthing
+            String s = JOptionPane.showInputDialog(f, "File:");
+            if (s == null || s.trim().isEmpty()) {
+                return false;
+            }
+            Path p = Paths.get(s);
+            if (!Files.exists(p)) {
+                return false;
+            }
+            ProgramProps.acceptPair("file", p.toAbsolutePath().toString());
+            return true;
+        }
         int yes = jfc.showOpenDialog(f);
         f.dispose();
         if (yes != JFileChooser.CANCEL_OPTION && jfc.getSelectedFile() != null) {
@@ -199,6 +214,19 @@ public class MidiMain extends KMain implements KeyListener {
         // apply always-on-top
         Frame f = new JFrame();
         f.setAlwaysOnTop(true);
+        if (shifty) {
+            // use a inputboxthing
+            String s = JOptionPane.showInputDialog(f, "File:");
+            if (s == null || s.trim().isEmpty()) {
+                return false;
+            }
+            Path p = Paths.get(s);
+            if (!Files.exists(p)) {
+                return false;
+            }
+            ProgramProps.acceptPair("soundbank", p.toAbsolutePath().toString());
+            return true;
+        }
         int yes = jfc.showOpenDialog(f);
         f.dispose();
         if (yes != JFileChooser.CANCEL_OPTION && jfc.getSelectedFile() != null) {
@@ -208,13 +236,21 @@ public class MidiMain extends KMain implements KeyListener {
         }
         return false;
     }
+    
+    private boolean shifty = false;
 
     @Override
     public void keyPressed(KeyEvent arg0) {
+        if (arg0.getKeyCode() == KeyEvent.VK_SHIFT) {
+            shifty = true;
+        }
     }
 
     @Override
     public void keyReleased(KeyEvent arg0) {
+        if (arg0.getKeyCode() == KeyEvent.VK_SHIFT) {
+            shifty = false;
+        }
         final int key = arg0.getKeyCode();
         Runnable r = new Runnable() {
 
