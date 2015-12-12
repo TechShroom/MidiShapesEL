@@ -1,6 +1,7 @@
 package com.k.midishapes.midi;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 import javax.sound.midi.MidiSystem;
 import javax.sound.midi.Receiver;
@@ -21,6 +22,12 @@ public class DisplayHackThread extends Thread {
     Sequencer seqr = null;
     public static boolean pause;
     static DisplayHackThread inst = null;
+    
+    public static void actOnSequencer(Consumer<Sequencer> c) {
+        if (inst != null && inst.seqr != null) {
+            c.accept(inst.seqr);
+        }
+    }
 
     public static void begin(Sequence file) {
         if (inst != null) {
@@ -83,6 +90,6 @@ public class DisplayHackThread extends Thread {
     }
 
     public static void repeat() {
-        inst.seqr.setMicrosecondPosition(0);
+        actOnSequencer(s -> s.setMicrosecondPosition(0));
     }
 }

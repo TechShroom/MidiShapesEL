@@ -58,7 +58,7 @@ public class MidiPlayer {
                 return;
             }
             if (paused) {
-                DisplayHackThread.inst.seqr.start();
+                DisplayHackThread.actOnSequencer(s -> s.start());
                 paused = false;
             } else {
                 DisplayHackThread.begin(file);
@@ -89,8 +89,8 @@ public class MidiPlayer {
                         DisplayHackThread.inst.interrupt();
                     }
                     // reset state
-                    DisplayHackThread.inst.seqr.stop();
-                    DisplayHackThread.inst.seqr.setMicrosecondPosition(0);
+                    DisplayHackThread.actOnSequencer(s -> s.setMicrosecondPosition(0));
+                    DisplayHackThread.actOnSequencer(s -> s.close());
                     DisplayHackThread.abort = false;
                     DisplayHackThread.inst = null;
                 }
@@ -101,7 +101,7 @@ public class MidiPlayer {
             if (exceptionMode) {
                 return;
             }
-            DisplayHackThread.inst.seqr.stop();
+            DisplayHackThread.actOnSequencer(s -> s.stop());
             paused = true;
         }
 
@@ -110,8 +110,8 @@ public class MidiPlayer {
                 return;
             }
             stop0(false);
-            DisplayHackThread.inst.seqr.setMicrosecondPosition(0);
-            DisplayHackThread.inst.seqr.close();
+            DisplayHackThread.actOnSequencer(s -> s.setMicrosecondPosition(0));
+            DisplayHackThread.actOnSequencer(s -> s.close());
         }
     }
 

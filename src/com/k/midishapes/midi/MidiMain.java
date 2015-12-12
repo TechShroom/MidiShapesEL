@@ -245,9 +245,9 @@ public class MidiMain extends KMain implements KeyListener {
                 if (key == KeyEvent.VK_R) {
                     MidiPlayer.repeat = !MidiPlayer.repeat;
                     if (MidiPlayer.repeat) {
-                        DisplayHackThread.inst.seqr.setLoopCount(Sequencer.LOOP_CONTINUOUSLY);
+                        DisplayHackThread.actOnSequencer(s -> s.setLoopCount(Sequencer.LOOP_CONTINUOUSLY));
                     } else {
-                        DisplayHackThread.inst.seqr.setLoopCount(0);
+                        DisplayHackThread.actOnSequencer(s -> s.setLoopCount(0));
                     }
                     System.err.println("Repeat is now "
                             + (MidiPlayer.repeat ? "on" : "off") + ".");
