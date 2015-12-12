@@ -1,8 +1,6 @@
 package com.k.midishapes.midi;
 
-import javax.sound.midi.MidiSystem;
 import javax.sound.midi.Sequence;
-import javax.sound.midi.Sequencer;
 
 public class MidiPlayer {
     public static final int NOTE_ON = 0x90, NOTE_OFF = 0x80,
@@ -44,15 +42,11 @@ public class MidiPlayer {
 
     static class MidiPlay {
         public static final MidiPlay EXCEPTION = new MidiPlay(true);
-        Sequencer seq = null;
         Sequence file = null;
         boolean exceptionMode, paused;
 
         public MidiPlay() throws Exception {
-            seq = MidiSystem.getSequencer();
             file = MidiReader.decodedSequence();
-            seq.open();
-            seq.setSequence(file);
         }
 
         private MidiPlay(boolean excep) {
@@ -116,8 +110,8 @@ public class MidiPlayer {
                 return;
             }
             stop0(false);
-            seq.setMicrosecondPosition(0);
-            seq.close();
+            DisplayHackThread.inst.seqr.setMicrosecondPosition(0);
+            DisplayHackThread.inst.seqr.close();
         }
     }
 

@@ -73,7 +73,7 @@ public class MidiMain extends KMain implements KeyListener {
             Thread[] threads = new Thread[Thread.activeCount() + 10];
             Thread.enumerate(threads);
             for (Thread thread : threads) {
-                if (thread.isDaemon()) {
+                if (thread.isDaemon() || thread.equals(Thread.currentThread())) {
                     continue;
                 }
                 thread.join(1000);
@@ -245,9 +245,9 @@ public class MidiMain extends KMain implements KeyListener {
                 if (key == KeyEvent.VK_R) {
                     MidiPlayer.repeat = !MidiPlayer.repeat;
                     if (MidiPlayer.repeat) {
-                        MidiPlayer.mpt.seq.setLoopCount(Sequencer.LOOP_CONTINUOUSLY);
+                        DisplayHackThread.inst.seqr.setLoopCount(Sequencer.LOOP_CONTINUOUSLY);
                     } else {
-                        MidiPlayer.mpt.seq.setLoopCount(0);
+                        DisplayHackThread.inst.seqr.setLoopCount(0);
                     }
                     System.err.println("Repeat is now "
                             + (MidiPlayer.repeat ? "on" : "off") + ".");
