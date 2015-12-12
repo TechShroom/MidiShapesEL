@@ -7,10 +7,13 @@ import java.awt.event.KeyListener;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.net.URL;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.sound.midi.MidiSystem;
+import javax.sound.midi.Sequencer;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -103,10 +106,12 @@ public class MidiMain extends KMain implements KeyListener {
         jfc.removeChoosableFileFilter(jfc.getAcceptAllFileFilter());
         jfc.addChoosableFileFilter(new FileNameExtensionFilter("MIDI Files",
                 "mid", "midi"));
+        jfc.setFileHidingEnabled(false);
         jfc = sbfc;
         jfc.removeChoosableFileFilter(jfc.getAcceptAllFileFilter());
         jfc.addChoosableFileFilter(new FileNameExtensionFilter(
                 "SoundFont2 Files", "sf2"));
+        jfc.setFileHidingEnabled(false);
     }
 
     @Override
@@ -153,11 +158,17 @@ public class MidiMain extends KMain implements KeyListener {
             if (!askForFile()) {
                 ProgramProps.acceptPair("file", "");
             }
+        } else {
+            Path theFile = Paths.get(ProgramProps.getProperty("file"));
+            ffc.setCurrentDirectory(theFile.getParent().toFile());
         }
         if (!ProgramProps.hasKey("soundbank")) {
             if (!askForSB()) {
                 ProgramProps.acceptPair("soundbank", "");
             }
+        } else {
+            Path theFile = Paths.get(ProgramProps.getProperty("soundbank"));
+            sbfc.setCurrentDirectory(theFile.getParent().toFile());
         }
         // prevents sync issues
         DefaultDisplayableInstrument.init();
@@ -233,6 +244,11 @@ public class MidiMain extends KMain implements KeyListener {
                 }
                 if (key == KeyEvent.VK_R) {
                     MidiPlayer.repeat = !MidiPlayer.repeat;
+                    if (MidiPlayer.repeat) {
+                        MidiPlayer.mpt.seq.setLoopCount(Sequencer.LOOP_CONTINUOUSLY);
+                    } else {
+                        MidiPlayer.mpt.seq.setLoopCount(0);
+                    }
                     System.err.println("Repeat is now "
                             + (MidiPlayer.repeat ? "on" : "off") + ".");
                 }
