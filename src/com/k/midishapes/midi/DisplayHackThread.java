@@ -79,6 +79,9 @@ public class DisplayHackThread extends Thread {
                 seqr.open();
             }
             seqr.setSequence(s);
+            if (MidiPlayer.repeat) {
+                seqr.setLoopCount(Sequencer.LOOP_CONTINUOUSLY);
+            }
         } catch (Exception e1) {
             e1.printStackTrace();
             abort = true;
