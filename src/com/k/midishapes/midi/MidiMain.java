@@ -67,6 +67,21 @@ public class MidiMain extends KMain implements KeyListener {
             while (!Display.isCloseRequested()) {
                 DisplayLayer.loop(120);
             }
+            Thread[] threads = new Thread[Thread.activeCount() + 10];
+            Thread.enumerate(threads);
+            for (Thread thread : threads) {
+                if (thread.isDaemon()) {
+                    continue;
+                }
+                thread.join(1000);
+                if (thread.isAlive()) {
+                    thread.interrupt();
+                    thread.join(1000);
+                    if (thread.isAlive()) {
+                        System.err.println("Can't kill thread: " + thread);
+                    }
+                }
+            }
             DisplayLayer.destroy();
         } catch (Exception e) {
             e.printStackTrace();
@@ -222,8 +237,7 @@ public class MidiMain extends KMain implements KeyListener {
                             + (MidiPlayer.repeat ? "on" : "off") + ".");
                 }
                 if (key == KeyEvent.VK_U) {
-                    MidiReader.user_recv_req();
-                    reboot = true;
+                    reboot = MidiReader.user_recv_req();
                 }
             }
         };

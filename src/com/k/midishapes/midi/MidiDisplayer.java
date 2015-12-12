@@ -11,6 +11,9 @@ import javax.sound.midi.ShortMessage;
 
 import com.k.midishapes.interfacing.DisplayableInstrument;
 
+import emergencylanding.k.library.lwjgl.Shapes;
+import emergencylanding.k.library.lwjgl.render.VBAO;
+import emergencylanding.k.library.lwjgl.render.VertexData;
 import emergencylanding.k.library.main.KMain;
 
 public class MidiDisplayer {
@@ -20,6 +23,8 @@ public class MidiDisplayer {
     private static ArrayList<Class<? extends DisplayableInstrument<?>>> displayableClasses = new ArrayList<Class<? extends DisplayableInstrument<?>>>();
     private static ArrayList<Constructor<? extends DisplayableInstrument<?>>> displayableConstrs = new ArrayList<Constructor<? extends DisplayableInstrument<?>>>();
 
+    private static final VBAO repeatBox = Shapes.getQuad(new VertexData().setXYZ(300, 300, 0).setRGB(1, 0, 0), new VertexData().setXYZ(100, 100, 0), Shapes.XY);
+    
     private static int currentClass = 0;
 
     private static boolean init = false;
@@ -57,6 +62,9 @@ public class MidiDisplayer {
     }
 
     public static void display() {
+        if (MidiPlayer.repeat) {
+            repeatBox.draw();
+        }
         synchronized (lk) {
             Collection<DisplayableInstrument<?>> vals = itod.values();
             for (DisplayableInstrument<?> di : vals) {

@@ -85,15 +85,17 @@ public class MidiReader {
         return synth;
     }
 
-    public static void user_recv_req() {
+    public static boolean user_recv_req() {
         Info[] midiInfo = MidiSystem.getMidiDeviceInfo();
         Info def = userRecvI;
+        Info before = def;
         if (def == null) {
             def = midiInfo[0];
         }
         userRecvI = (Info) JOptionPane.showInputDialog(null,
                 "Choose a MidiDevice", "Choose a MidiDevice",
                 JOptionPane.QUESTION_MESSAGE, null, midiInfo, def);
+        return userRecvI != before;
     }
 
     public static Receiver openReceiver() throws MidiUnavailableException {
