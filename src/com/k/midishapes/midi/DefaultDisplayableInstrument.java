@@ -14,9 +14,9 @@ public abstract class DefaultDisplayableInstrument<T extends DefaultDisplayableI
     static void init() {
         // thread safe dealios
     }
-    
+
     private static final Random COLOR_RAND = new Random();
-    
+
     /**
      * A default 'on' texture
      */
@@ -29,11 +29,13 @@ public abstract class DefaultDisplayableInstrument<T extends DefaultDisplayableI
     /**
      * The 'on' note color
      */
-    protected ELTexture noteOn = new ColorTexture(new Color(COLOR_RAND.nextInt() & 0xFF_FF_FF));
+    protected ELTexture noteOn =
+            new ColorTexture(new Color(COLOR_RAND.nextInt() & 0xFF_FF_FF));
     /**
      * The 'off' note color
      */
-    protected ELTexture noteOff = new ColorTexture(new Color(COLOR_RAND.nextInt() & 0xFF_FF_FF));
+    protected ELTexture noteOff = new ColorTexture(
+            ColorUtil.complementary(((ColorTexture) noteOn).getRawColor()));
     /**
      * The id of this instrument
      */
