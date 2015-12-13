@@ -15,12 +15,14 @@ import emergencylanding.k.library.lwjgl.render.VertexData;
  * @author Kenzie Togami
  * 
  */
-public class DisplayableInstrumentImpl extends
-        DefaultDisplayableInstrument<DisplayableInstrumentImpl> {
+public class DisplayableInstrumentImpl
+        extends DefaultDisplayableInstrument<DisplayableInstrumentImpl> {
+
     private VBAO[] notes = new VBAO[NOTES];
     private Runnable guiRunnable = new DIGUI(this);
     private final int rx = 0, ry, rz = 0;
-    private final int dim = (int) (((float) Display.getWidth()) / (((float) NOTES) * 1.15f));
+    private final int dim =
+            (int) (((float) Display.getWidth()) / (((float) NOTES) * 1.15f));
     private Rectangle bounding;
 
     public DisplayableInstrumentImpl(int idChannel) {
@@ -30,8 +32,8 @@ public class DisplayableInstrumentImpl extends
         ry_ += id * (dim * 2);
         ry_++;
         ry = ry_;
-        bounding = new Rectangle(0, ry, (int) (dim * (NOTES + 1) * 1.2f),
-                dim * 2);
+        bounding =
+                new Rectangle(0, ry, (int) (dim * (NOTES + 1) * 1.2f), dim * 2);
         setupVBAOS();
     }
 
@@ -71,11 +73,14 @@ public class DisplayableInstrumentImpl extends
     private void setupVBAOS() {
         for (int i = 0; i < NOTES; i++) {
             int on_next = (int) ((i * dim) / Display.getWidth());
-            VBAO next = Shapes.getQuad(
-                    new VertexData().setXYZ((int) (rx + (dim
-                            * ((i / (on_next + 1)) + 1) * 1.2f)), ry
-                            + (dim * on_next * 2), rz),
-                    new VertexData().setXYZ(dim, dim * 2, dim), Shapes.XY);
+            VBAO next =
+                    Shapes.getQuad(
+                            new VertexData().setXYZ(
+                                    (int) (rx + (dim * ((i / (on_next + 1)) + 1)
+                                            * 1.2f)),
+                                    ry + (dim * on_next * 2), rz),
+                            new VertexData().setXYZ(dim, dim * 2, dim),
+                            Shapes.XY);
             next.setTexture(noteOffColor());
             notes[i] = next;
         }

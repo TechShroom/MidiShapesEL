@@ -12,10 +12,12 @@ import com.k.midishapes.midi.MidiDisplayer;
 import com.k.midishapes.midi.MidiPlayer;
 
 public class ChainedReceiver implements Receiver {
+
     /**
      * Channel -> {@link DisplayableInstrument} mappings
      */
     private static final int[] mapping = new int[16];
+
     static {
         for (int i = 0; i < mapping.length; i++) {
             mapping[i] = MidiDisplayer.sendToInstrument(sm_alloff(i), -1);

@@ -3,6 +3,7 @@ package com.k.midishapes.midi;
 import javax.sound.midi.Sequence;
 
 public class MidiPlayer {
+
     public static final int NOTE_ON = 0x90, NOTE_OFF = 0x80,
             CONTROL_CHANGE = 0xB0, ALL_NOTES_OFF = 123, ALL_SOUND_OFF = 120,
             OMNI_ON = 125, OMNI_OFF = 124, MONO = 126, POLY = 127;
@@ -14,8 +15,8 @@ public class MidiPlayer {
         try {
             mpt = new MidiPlay();
         } catch (Exception e) {
-            System.err
-                    .println("MidiPlay not launchable, please report the following:");
+            System.err.println(
+                    "MidiPlay not launchable, please report the following:");
             e.printStackTrace();
             mpt = MidiPlay.EXCEPTION;
             return;
@@ -41,6 +42,7 @@ public class MidiPlayer {
     }
 
     static class MidiPlay {
+
         public static final MidiPlay EXCEPTION = new MidiPlay(true);
         Sequence file = null;
         boolean exceptionMode, paused;
@@ -89,7 +91,8 @@ public class MidiPlayer {
                         DisplayHackThread.inst.interrupt();
                     }
                     // reset state
-                    DisplayHackThread.actOnSequencer(s -> s.setMicrosecondPosition(0));
+                    DisplayHackThread
+                            .actOnSequencer(s -> s.setMicrosecondPosition(0));
                     DisplayHackThread.actOnSequencer(s -> s.close());
                     DisplayHackThread.abort = false;
                     DisplayHackThread.inst = null;

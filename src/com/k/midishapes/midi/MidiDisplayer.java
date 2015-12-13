@@ -17,14 +17,20 @@ import emergencylanding.k.library.lwjgl.render.VertexData;
 import emergencylanding.k.library.main.KMain;
 
 public class MidiDisplayer {
-    static HashMap<Integer, DisplayableInstrument<?>> itod = new HashMap<Integer, DisplayableInstrument<?>>();
+
+    static HashMap<Integer, DisplayableInstrument<?>> itod =
+            new HashMap<Integer, DisplayableInstrument<?>>();
     private static int nextAvaliable = 0;
     private static final Object lk = new Object();
-    private static ArrayList<Class<? extends DisplayableInstrument<?>>> displayableClasses = new ArrayList<Class<? extends DisplayableInstrument<?>>>();
-    private static ArrayList<Constructor<? extends DisplayableInstrument<?>>> displayableConstrs = new ArrayList<Constructor<? extends DisplayableInstrument<?>>>();
+    private static ArrayList<Class<? extends DisplayableInstrument<?>>> displayableClasses =
+            new ArrayList<Class<? extends DisplayableInstrument<?>>>();
+    private static ArrayList<Constructor<? extends DisplayableInstrument<?>>> displayableConstrs =
+            new ArrayList<Constructor<? extends DisplayableInstrument<?>>>();
 
-    private static final VBAO repeatBox = Shapes.getQuad(new VertexData().setXYZ(300, 300, 0).setRGB(1, 0, 0), new VertexData().setXYZ(100, 100, 0), Shapes.XY);
-    
+    private static final VBAO repeatBox =
+            Shapes.getQuad(new VertexData().setXYZ(300, 300, 0).setRGB(1, 0, 0),
+                    new VertexData().setXYZ(100, 100, 0), Shapes.XY);
+
     private static int currentClass = 0;
 
     private static boolean init = false;
@@ -37,15 +43,16 @@ public class MidiDisplayer {
 
         // register here later
 
-        ArrayList<Class<? extends DisplayableInstrument<?>>> rem = new ArrayList<Class<? extends DisplayableInstrument<?>>>();
+        ArrayList<Class<? extends DisplayableInstrument<?>>> rem =
+                new ArrayList<Class<? extends DisplayableInstrument<?>>>();
         for (Class<? extends DisplayableInstrument<?>> c : displayableClasses) {
             try {
-                Constructor<? extends DisplayableInstrument<?>> constr = c
-                        .getDeclaredConstructor(int.class);
+                Constructor<? extends DisplayableInstrument<?>> constr =
+                        c.getDeclaredConstructor(int.class);
                 displayableConstrs.add(constr);
             } catch (NoSuchMethodException e) {
-                System.err
-                        .println("Invalid class formatting: id parameter required @ "
+                System.err.println(
+                        "Invalid class formatting: id parameter required @ "
                                 + c.getName());
                 rem.add(c);
             } catch (SecurityException e) {
@@ -98,8 +105,8 @@ public class MidiDisplayer {
                             || sm.getData1() == MidiPlayer.ALL_SOUND_OFF
                             || sm.getData1() == MidiPlayer.MONO
                             || sm.getData1() == MidiPlayer.OMNI_OFF
-                            || sm.getData1() == MidiPlayer.OMNI_ON || sm
-                            .getData1() == MidiPlayer.POLY)) {
+                            || sm.getData1() == MidiPlayer.OMNI_ON
+                            || sm.getData1() == MidiPlayer.POLY)) {
                 // All note off?
                 inst.stopAll();
             } else if (sm.getCommand() == MidiPlayer.NOTE_OFF) {
@@ -147,18 +154,18 @@ public class MidiDisplayer {
         }
     }
 
-    public static void registerClass(
-            Class<? extends DisplayableInstrument<?>> diClass) {
+    public static void
+            registerClass(Class<? extends DisplayableInstrument<?>> diClass) {
         if (init) {
             // already init, register methods
 
             try {
-                Constructor<? extends DisplayableInstrument<?>> constr = diClass
-                        .getDeclaredConstructor(int.class);
+                Constructor<? extends DisplayableInstrument<?>> constr =
+                        diClass.getDeclaredConstructor(int.class);
                 displayableConstrs.add(constr);
             } catch (NoSuchMethodException e) {
-                System.err
-                        .println("Invalid class formatting: id parameter required @ "
+                System.err.println(
+                        "Invalid class formatting: id parameter required @ "
                                 + diClass.getName());
                 return;
             } catch (SecurityException e) {

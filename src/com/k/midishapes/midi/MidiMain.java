@@ -20,8 +20,6 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
-import k.core.util.core.Helper.ProgramProps;
-
 import org.lwjgl.opengl.Display;
 
 import com.k.midishapes.interfacing.DIMod;
@@ -35,8 +33,10 @@ import emergencylanding.k.library.lwjgl.control.Keys;
 import emergencylanding.k.library.lwjgl.tex.ELTexture;
 import emergencylanding.k.library.main.KMain;
 import emergencylanding.k.library.util.LUtils;
+import k.core.util.core.Helper.ProgramProps;
 
 public class MidiMain extends KMain implements KeyListener {
+
     public static void main(String[] args) {
         String[] norm = ProgramProps.normalizeCommandArgs(args);
         for (int i = 0; i < norm.length; i += 2) {
@@ -44,17 +44,19 @@ public class MidiMain extends KMain implements KeyListener {
             ProgramProps.acceptPair(key, value);
         }
         try {
-            Method getsbr = MidiSystem.class
-                    .getDeclaredMethod("getSoundbankReaders");
+            Method getsbr =
+                    MidiSystem.class.getDeclaredMethod("getSoundbankReaders");
             getsbr.setAccessible(true);
-            List<Object> l = new ArrayList<Object>(
-                    (List<?>) getsbr.invoke(null)), del = new ArrayList<Object>(), add = new ArrayList<Object>();
+            List<Object> l =
+                    new ArrayList<Object>((List<?>) getsbr.invoke(null)),
+                    del = new ArrayList<Object>(),
+                    add = new ArrayList<Object>();
             for (Object o : l) {
                 add.add(o.getClass());
                 del.add(o);
                 Class<?> klass = o.getClass();
-                URL location = klass.getResource('/'
-                        + klass.getName().replace('.', '/') + ".class");
+                URL location = klass.getResource(
+                        '/' + klass.getName().replace('.', '/') + ".class");
                 System.err.println(location);
             }
             l.removeAll(del);
@@ -75,7 +77,8 @@ public class MidiMain extends KMain implements KeyListener {
             Thread[] threads = new Thread[Thread.activeCount() + 10];
             Thread.enumerate(threads);
             for (Thread thread : threads) {
-                if (thread.isDaemon() || thread.equals(Thread.currentThread())) {
+                if (thread.isDaemon()
+                        || thread.equals(Thread.currentThread())) {
                     continue;
                 }
                 thread.join(1000);
@@ -106,13 +109,13 @@ public class MidiMain extends KMain implements KeyListener {
     {
         JFileChooser jfc = ffc;
         jfc.removeChoosableFileFilter(jfc.getAcceptAllFileFilter());
-        jfc.addChoosableFileFilter(new FileNameExtensionFilter("MIDI Files",
-                "mid", "midi"));
+        jfc.addChoosableFileFilter(
+                new FileNameExtensionFilter("MIDI Files", "mid", "midi"));
         jfc.setFileHidingEnabled(false);
         jfc = sbfc;
         jfc.removeChoosableFileFilter(jfc.getAcceptAllFileFilter());
-        jfc.addChoosableFileFilter(new FileNameExtensionFilter(
-                "SoundFont2 Files", "sf2"));
+        jfc.addChoosableFileFilter(
+                new FileNameExtensionFilter("SoundFont2 Files", "sf2"));
         jfc.setFileHidingEnabled(false);
     }
 
@@ -148,12 +151,13 @@ public class MidiMain extends KMain implements KeyListener {
             }
         }
         try {
-            LUtils.setIcon(LUtils.getInputStream(LUtils.TOP_LEVEL
-                    + "/resource/img/midishapesFIN.png"));
+            LUtils.setIcon(LUtils.getInputStream(
+                    LUtils.TOP_LEVEL + "/resource/img/midishapesFIN.png"));
         } catch (IOException e) {
             e.printStackTrace();
         }
-        if (args.length > 0 && args.length < 2 && !ProgramProps.hasKey("file")) {
+        if (args.length > 0 && args.length < 2
+                && !ProgramProps.hasKey("file")) {
             ProgramProps.acceptPair("file", args[0]);
         }
         if (!ProgramProps.hasKey("file")) {
@@ -202,9 +206,10 @@ public class MidiMain extends KMain implements KeyListener {
         }
         int yes = jfc.showOpenDialog(f);
         f.dispose();
-        if (yes != JFileChooser.CANCEL_OPTION && jfc.getSelectedFile() != null) {
-            ProgramProps.acceptPair("file", jfc.getSelectedFile()
-                    .getAbsolutePath());
+        if (yes != JFileChooser.CANCEL_OPTION
+                && jfc.getSelectedFile() != null) {
+            ProgramProps.acceptPair("file",
+                    jfc.getSelectedFile().getAbsolutePath());
             return true;
         }
         return false;
@@ -231,14 +236,15 @@ public class MidiMain extends KMain implements KeyListener {
         }
         int yes = jfc.showOpenDialog(f);
         f.dispose();
-        if (yes != JFileChooser.CANCEL_OPTION && jfc.getSelectedFile() != null) {
-            ProgramProps.acceptPair("soundbank", jfc.getSelectedFile()
-                    .getAbsolutePath());
+        if (yes != JFileChooser.CANCEL_OPTION
+                && jfc.getSelectedFile() != null) {
+            ProgramProps.acceptPair("soundbank",
+                    jfc.getSelectedFile().getAbsolutePath());
             return true;
         }
         return false;
     }
-    
+
     private boolean shifty = false;
 
     @Override
@@ -283,9 +289,11 @@ public class MidiMain extends KMain implements KeyListener {
                 if (key == KeyEvent.VK_R) {
                     MidiPlayer.repeat = !MidiPlayer.repeat;
                     if (MidiPlayer.repeat) {
-                        DisplayHackThread.actOnSequencer(s -> s.setLoopCount(Sequencer.LOOP_CONTINUOUSLY));
+                        DisplayHackThread.actOnSequencer(s -> s
+                                .setLoopCount(Sequencer.LOOP_CONTINUOUSLY));
                     } else {
-                        DisplayHackThread.actOnSequencer(s -> s.setLoopCount(0));
+                        DisplayHackThread
+                                .actOnSequencer(s -> s.setLoopCount(0));
                     }
                     System.err.println("Repeat is now "
                             + (MidiPlayer.repeat ? "on" : "off") + ".");
@@ -311,8 +319,8 @@ public class MidiMain extends KMain implements KeyListener {
                 MidiDisplayer.registerClass(((DIMod) m).getDIClass());
             } else if (m instanceof DisplayableInstrument<?>) {
                 // messed up generics means this needs the unchecked cast
-                MidiDisplayer
-                        .registerClass((Class<? extends DisplayableInstrument<?>>) ((DisplayableInstrument<?>) m)
+                MidiDisplayer.registerClass(
+                        (Class<? extends DisplayableInstrument<?>>) ((DisplayableInstrument<?>) m)
                                 .getClass());
             } else {
                 rem.add(m);

@@ -9,6 +9,7 @@ import emergencylanding.k.library.lwjgl.tex.ELTexture;
 
 public abstract class DefaultDisplayableInstrument<T extends DefaultDisplayableInstrument<T>>
         implements DisplayableInstrument<T> {
+
     static void init() {
         // thread safe dealios
     }
@@ -24,8 +25,8 @@ public abstract class DefaultDisplayableInstrument<T extends DefaultDisplayableI
     /**
      * A default 'off' texture
      */
-    protected static final ELTexture noteOffStatic = new ColorTexture(
-            Color.DARK_GRAY);
+    protected static final ELTexture noteOffStatic =
+            new ColorTexture(Color.DARK_GRAY);
     /**
      * The 'on' note color
      */

@@ -14,6 +14,7 @@ import com.k.midishapes.midi.custom.ChainedReceiver;
 import com.sun.media.sound.AutoConnectSequencer;
 
 public class DisplayHackThread extends Thread {
+
     public TempoCache tc;
     public long tick;
     public static boolean abort;
@@ -22,7 +23,7 @@ public class DisplayHackThread extends Thread {
     Sequencer seqr = null;
     public static boolean pause;
     static DisplayHackThread inst = null;
-    
+
     public static void actOnSequencer(Consumer<Sequencer> c) {
         if (inst != null && inst.seqr != null) {
             c.accept(inst.seqr);

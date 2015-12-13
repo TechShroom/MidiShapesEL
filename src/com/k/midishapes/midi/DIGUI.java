@@ -11,11 +11,12 @@ import javax.swing.JColorChooser;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
 
-import k.core.util.gui.SwingAWTUtils;
 import emergencylanding.k.library.lwjgl.tex.ColorTexture;
 import emergencylanding.k.library.lwjgl.tex.ELTexture;
+import k.core.util.gui.SwingAWTUtils;
 
 public class DIGUI implements Runnable {
+
     private DisplayableInstrumentImpl ourInst = null;
     final JColorChooser noteOn = new JColorChooser();
     final JColorChooser noteOff = new JColorChooser();
@@ -47,6 +48,7 @@ public class DIGUI implements Runnable {
         jbutton_color.setForeground(Color.BLACK);
         jbutton_color.setBackground(c);
         jbutton_color.setAction(new AbstractAction() {
+
             private static final long serialVersionUID = 1L;
 
             @Override
@@ -61,6 +63,7 @@ public class DIGUI implements Runnable {
         jbutton_color2.setForeground(Color.BLACK);
         jbutton_color2.setBackground(c2);
         jbutton_color2.setAction(new AbstractAction() {
+
             private static final long serialVersionUID = 1L;
 
             @Override
@@ -88,6 +91,7 @@ public class DIGUI implements Runnable {
         retVal = jcc.getColor();
         JDialog dialog = JColorChooser.createDialog(null, "Choose a color:",
                 true, jcc, new AbstractAction() {
+
                     private static final long serialVersionUID = 1L;
 
                     @Override

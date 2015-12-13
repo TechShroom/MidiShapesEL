@@ -1,7 +1,5 @@
 package com.k.midishapes.midi;
 
-import g.com.sun.media.sound.MidiDeviceReceiver;
-
 import java.io.File;
 import java.io.IOException;
 
@@ -17,9 +15,11 @@ import javax.swing.JOptionPane;
 
 import com.k.midishapes.midi.custom.CustomReceiver;
 
+import g.com.sun.media.sound.MidiDeviceReceiver;
 import k.core.util.core.Helper.ProgramProps;
 
 public class MidiReader {
+
     public static File midi = null;
     private static Synthesizer synth;
     private static Info userRecvI = null;
@@ -31,8 +31,8 @@ public class MidiReader {
         }
     }
 
-    public static Sequence decodedSequence() throws InvalidMidiDataException,
-            IOException {
+    public static Sequence decodedSequence()
+            throws InvalidMidiDataException, IOException {
         if (midi == null || midi.equals(""))
             return new Sequence(Sequence.PPQ, 4);
         return MidiSystem.getSequence(midi);
@@ -66,8 +66,8 @@ public class MidiReader {
         Soundbank sf2bank = synth.getDefaultSoundbank();
         if (ProgramProps.hasKey("soundbank")) {
             try {
-                sf2bank = MidiSystem.getSoundbank(new File(ProgramProps
-                        .getProperty("soundbank")));
+                sf2bank = MidiSystem.getSoundbank(
+                        new File(ProgramProps.getProperty("soundbank")));
             } catch (InvalidMidiDataException e) {
                 e.printStackTrace();
             } catch (IOException e) {
@@ -110,7 +110,8 @@ public class MidiReader {
             ((MidiDeviceReceiver) recv).getMidiDevice().open();
         } else if (recv_not_open(recv)) {
             throw new IllegalStateException(
-                    "Receiver not opened, and not openable: " + recv.getClass());
+                    "Receiver not opened, and not openable: "
+                            + recv.getClass());
         }
         return recv;
     }
