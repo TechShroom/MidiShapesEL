@@ -105,11 +105,16 @@ public class MidiMain extends KMain implements KeyListener {
                     e.printStackTrace();
                 }
                 if (thread.isAlive()) {
-                    System.err.println("Can't kill thread: " + thread);
-                    
+                    // Give up. Force a clean exit here.
+                    deprecatedStop(thread);
                 }
             }
         }
+    }
+
+    @SuppressWarnings("deprecation")
+    private static void deprecatedStop(Thread thread) {
+        thread.stop();
     }
 
     boolean reboot;
