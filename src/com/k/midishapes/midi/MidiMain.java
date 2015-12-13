@@ -212,20 +212,20 @@ public class MidiMain extends KMain implements KeyListener {
         }
         JFileChooser jfc = ffc;
         if (doSetFFC) {
-            jfc.removeChoosableFileFilter(jfc.getAcceptAllFileFilter());
-            jfc.addChoosableFileFilter(
-                    new FileNameExtensionFilter("MIDI Files", "mid", "midi"));
             jfc.setFileHidingEnabled(false);
             Runtime.getRuntime().addShutdownHook(new SaveJFCThread(jfc, FFC_CONFIG));
         }
+        jfc.removeChoosableFileFilter(jfc.getAcceptAllFileFilter());
+        jfc.addChoosableFileFilter(
+                new FileNameExtensionFilter("MIDI Files", "mid", "midi"));
         jfc = sbfc;
         if (doSetSBFC) {
-            jfc.removeChoosableFileFilter(jfc.getAcceptAllFileFilter());
-            jfc.addChoosableFileFilter(
-                    new FileNameExtensionFilter("SoundFont2 Files", "sf2"));
             jfc.setFileHidingEnabled(false);
             Runtime.getRuntime().addShutdownHook(new SaveJFCThread(jfc, SBFC_CONFIG));
         }
+        jfc.removeChoosableFileFilter(jfc.getAcceptAllFileFilter());
+        jfc.addChoosableFileFilter(
+                new FileNameExtensionFilter("SoundFont2 Files", "sf2"));
     }
 
     @Override
