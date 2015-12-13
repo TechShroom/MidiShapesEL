@@ -5,6 +5,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.management.RuntimeErrorException;
 import javax.sound.midi.ShortMessage;
@@ -22,6 +23,7 @@ public class MidiDisplayer {
             new HashMap<Integer, DisplayableInstrument<?>>();
     private static int nextAvaliable = 0;
     private static final Object lk = new Object();
+    private static final AtomicBoolean shutdown = new AtomicBoolean();
     private static ArrayList<Class<? extends DisplayableInstrument<?>>> displayableClasses =
             new ArrayList<Class<? extends DisplayableInstrument<?>>>();
     private static ArrayList<Constructor<? extends DisplayableInstrument<?>>> displayableConstrs =
@@ -84,6 +86,9 @@ public class MidiDisplayer {
     }
 
     public static int sendToInstrument(ShortMessage sm, int id) {
+        if (shutdown.get()) {
+            return -1;
+        }
         DisplayableInstrument<?> inst = itod.get(id);
         if (inst == null) {
             synchronized (lk) {
@@ -135,6 +140,7 @@ public class MidiDisplayer {
     }
 
     public static void exit() {
+        shutdown.set(true);
         synchronized (lk) {
             itod.clear();
         }
