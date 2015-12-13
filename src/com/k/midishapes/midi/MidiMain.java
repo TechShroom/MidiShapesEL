@@ -74,22 +74,6 @@ public class MidiMain extends KMain implements KeyListener {
             while (!Display.isCloseRequested()) {
                 DisplayLayer.loop(120);
             }
-            Thread[] threads = new Thread[Thread.activeCount() + 10];
-            Thread.enumerate(threads);
-            for (Thread thread : threads) {
-                if (thread.isDaemon()
-                        || thread.equals(Thread.currentThread())) {
-                    continue;
-                }
-                thread.join(1000);
-                if (thread.isAlive()) {
-                    thread.interrupt();
-                    thread.join(1000);
-                    if (thread.isAlive()) {
-                        System.err.println("Can't kill thread: " + thread);
-                    }
-                }
-            }
             DisplayLayer.destroy();
         } catch (Exception e) {
             e.printStackTrace();
@@ -101,6 +85,31 @@ public class MidiMain extends KMain implements KeyListener {
         MidiReader.exit();
         MidiDisplayer.exit();
         MidiPlayer.exit();
+        Thread[] threads = new Thread[Thread.activeCount() + 10];
+        Thread.enumerate(threads);
+        for (Thread thread : threads) {
+            if (thread == null || thread.isDaemon()
+                    || thread.equals(Thread.currentThread())) {
+                continue;
+            }
+            try {
+                thread.join(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            if (thread.isAlive()) {
+                thread.interrupt();
+                try {
+                    thread.join(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                if (thread.isAlive()) {
+                    System.err.println("Can't kill thread: " + thread);
+                    
+                }
+            }
+        }
     }
 
     boolean reboot;

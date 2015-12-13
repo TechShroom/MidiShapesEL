@@ -91,8 +91,6 @@ public class MidiPlayer {
                         DisplayHackThread.inst.interrupt();
                     }
                     // reset state
-                    DisplayHackThread
-                            .actOnSequencer(s -> s.setMicrosecondPosition(0));
                     DisplayHackThread.actOnSequencer(s -> s.close());
                     DisplayHackThread.abort = false;
                     DisplayHackThread.inst = null;
@@ -113,7 +111,6 @@ public class MidiPlayer {
                 return;
             }
             stop0(false);
-            DisplayHackThread.actOnSequencer(s -> s.setMicrosecondPosition(0));
             DisplayHackThread.actOnSequencer(s -> s.close());
         }
     }
