@@ -68,7 +68,8 @@ public class MidiMain extends KMain implements KeyListener {
             e.printStackTrace();
         }
         try {
-            UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
+            UIManager.setLookAndFeel(
+                    UIManager.getCrossPlatformLookAndFeelClassName());
         } catch (ClassNotFoundException | InstantiationException
                 | IllegalAccessException | UnsupportedLookAndFeelException e1) {
             e1.printStackTrace();
@@ -316,8 +317,12 @@ public class MidiMain extends KMain implements KeyListener {
                 if (key == KeyEvent.VK_R) {
                     MidiPlayer.repeat = !MidiPlayer.repeat;
                     if (MidiPlayer.repeat) {
-                        DisplayHackThread.actOnSequencer(s -> s
-                                .setLoopCount(Sequencer.LOOP_CONTINUOUSLY));
+                        DisplayHackThread.actOnSequencer(s -> {
+                            s.setLoopCount(Sequencer.LOOP_CONTINUOUSLY);
+                            if (!s.isRunning()) {
+                                s.start();
+                            }
+                        });
                     } else {
                         DisplayHackThread
                                 .actOnSequencer(s -> s.setLoopCount(0));

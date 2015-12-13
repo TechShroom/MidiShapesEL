@@ -1,6 +1,7 @@
 package com.k.midishapes.midi;
 
 import java.awt.Color;
+import java.util.Random;
 
 import com.k.midishapes.interfacing.DisplayableInstrument;
 
@@ -13,11 +14,9 @@ public abstract class DefaultDisplayableInstrument<T extends DefaultDisplayableI
     static void init() {
         // thread safe dealios
     }
-
-    /**
-     * The constant representing the number of notes a MIDI supports
-     */
-    protected static final int NOTES = 128; // 128 notes
+    
+    private static final Random COLOR_RAND = new Random();
+    
     /**
      * A default 'on' texture
      */
@@ -30,11 +29,11 @@ public abstract class DefaultDisplayableInstrument<T extends DefaultDisplayableI
     /**
      * The 'on' note color
      */
-    protected ELTexture noteOn = noteOnStatic;
+    protected ELTexture noteOn = new ColorTexture(new Color(COLOR_RAND.nextInt() & 0xFF_FF_FF));
     /**
      * The 'off' note color
      */
-    protected ELTexture noteOff = noteOffStatic;
+    protected ELTexture noteOff = new ColorTexture(new Color(COLOR_RAND.nextInt() & 0xFF_FF_FF));
     /**
      * The id of this instrument
      */

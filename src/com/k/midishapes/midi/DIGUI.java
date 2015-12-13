@@ -18,13 +18,15 @@ import k.core.util.gui.SwingAWTUtils;
 public class DIGUI implements Runnable {
 
     private DisplayableInstrumentImpl ourInst = null;
-    final JColorChooser noteOn = new JColorChooser();
-    final JColorChooser noteOff = new JColorChooser();
+    static final JColorChooser noteOn = new JColorChooser();
+    static final JColorChooser noteOff = new JColorChooser();
+    static {
+        noteOn.setName("Note On Color");
+        noteOff.setName("Note Off Color");
+    }
 
     public DIGUI(DisplayableInstrumentImpl di) {
         ourInst = di;
-        noteOn.setName("Note On Color");
-        noteOff.setName("Note Off Color");
     }
 
     @Override
@@ -33,49 +35,53 @@ public class DIGUI implements Runnable {
         Color c = Color.WHITE;
         if (ourTex instanceof ColorTexture) {
             c = ((ColorTexture) ourTex).getRawColor();
+        } else {
+            return;
         }
-        noteOn.setColor(c);
         ELTexture ourTex2 = ourInst.noteOffColor();
         Color c2 = Color.WHITE;
         if (ourTex2 instanceof ColorTexture) {
             c2 = ((ColorTexture) ourTex2).getRawColor();
+        } else {
+            return;
         }
+        noteOn.setColor(c);
         noteOff.setColor(c2);
-        JPanel disp_panel = new JPanel(new GridLayout(5, 5));
-        disp_panel.setBackground(Color.BLUE);
-        final JButton jbutton_color = new JButton();
-        jbutton_color.setText("Note On Color");
-        jbutton_color.setForeground(Color.BLACK);
-        jbutton_color.setBackground(c);
-        jbutton_color.setAction(new AbstractAction() {
+        JPanel displayPanel = new JPanel(new GridLayout(5, 5));
+        displayPanel.setBackground(Color.BLUE);
+        final JButton primaryColor = new JButton();
+        primaryColor.setForeground(Color.BLACK);
+        primaryColor.setBackground(c);
+        primaryColor.setFocusPainted(false);
+        primaryColor.setAction(new AbstractAction("Note On Color") {
 
             private static final long serialVersionUID = 1L;
 
             @Override
             public void actionPerformed(ActionEvent arg0) {
                 Color newColor = showColorChoices(noteOn);
-                jbutton_color.setBackground(newColor);
+                primaryColor.setBackground(newColor);
             }
         });
-        disp_panel.add(jbutton_color);
-        final JButton jbutton_color2 = new JButton();
-        jbutton_color2.setText("Note Off Color");
-        jbutton_color2.setForeground(Color.BLACK);
-        jbutton_color2.setBackground(c2);
-        jbutton_color2.setAction(new AbstractAction() {
+        displayPanel.add(primaryColor);
+        final JButton secondaryColor = new JButton();
+        secondaryColor.setForeground(Color.BLACK);
+        secondaryColor.setBackground(c2);
+        secondaryColor.setFocusPainted(false);
+        secondaryColor.setAction(new AbstractAction("Note Off Color") {
 
             private static final long serialVersionUID = 1L;
 
             @Override
             public void actionPerformed(ActionEvent arg0) {
                 Color newColor = showColorChoices(noteOff);
-                jbutton_color2.setBackground(newColor);
+                secondaryColor.setBackground(newColor);
             }
         });
-        disp_panel.add(jbutton_color2);
+        displayPanel.add(secondaryColor);
         JDialog dialog = new JDialog((Dialog) null, "Options for Track", true);
-        dialog.add(disp_panel);
-        dialog.pack();
+        dialog.add(displayPanel);
+        dialog.setSize(500, 300);
         dialog.setLocationRelativeTo(null);
         dialog.setAlwaysOnTop(false);
         dialog.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
@@ -83,6 +89,12 @@ public class DIGUI implements Runnable {
         // NB setVisible is last on list because it blocks.
         dialog.setVisible(true);
         dialog.dispose();
+        // Reset textures.
+        ColorTexture ctex1 = new ColorTexture(primaryColor.getBackground());
+        ColorTexture ctex2 = new ColorTexture(secondaryColor.getBackground());
+        ourInst.setNoteOn(ctex1);
+        ourInst.setNoteOff(ctex2);
+        ourInst.redraw();
     }
 
     Color retVal = null;

@@ -15,6 +15,11 @@ import emergencylanding.k.library.lwjgl.tex.ELTexture;
 public interface DisplayableInstrument<T extends DisplayableInstrument<T>> {
 
     /**
+     * The constant representing the number of notes a MIDI supports
+     */
+    public static final int NOTES = 128;
+
+    /**
      * Draws this instrument, although it is possible to react to certain events
      * here as well.
      */

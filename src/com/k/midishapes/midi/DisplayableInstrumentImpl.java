@@ -19,6 +19,7 @@ public class DisplayableInstrumentImpl
         extends DefaultDisplayableInstrument<DisplayableInstrumentImpl> {
 
     private VBAO[] notes = new VBAO[NOTES];
+    private boolean[] noteState = new boolean[NOTES];
     private Runnable guiRunnable = new DIGUI(this);
     private final int rx = 0, ry, rz = 0;
     private final int dim =
@@ -55,19 +56,25 @@ public class DisplayableInstrumentImpl
 
     @Override
     public void playNote(int note) {
+        noteState[note] = true;
         notes[note].setTexture(noteOnColor());
     }
 
     @Override
     public void stopNote(int note) {
+        noteState[note] = false;
         notes[note].setTexture(noteOffColor());
     }
 
     @Override
     public void stopAll() {
         for (int i = 0; i < NOTES; i++) {
-            notes[i].setTexture(noteOffColor());
+            stopNote(i);
         }
+    }
+
+    public void redraw() {
+        setupVBAOS();
     }
 
     private void setupVBAOS() {
@@ -81,7 +88,11 @@ public class DisplayableInstrumentImpl
                                     ry + (dim * on_next * 2), rz),
                             new VertexData().setXYZ(dim, dim * 2, dim),
                             Shapes.XY);
-            next.setTexture(noteOffColor());
+            if (noteState[i]) {
+                next.setTexture(noteOnColor());
+            } else {
+                next.setTexture(noteOffColor());
+            }
             notes[i] = next;
         }
     }
