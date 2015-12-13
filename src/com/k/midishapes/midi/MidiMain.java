@@ -192,8 +192,9 @@ public class MidiMain extends KMain implements KeyListener {
             if (s == null || s.trim().isEmpty()) {
                 return false;
             }
-            Path p = Paths.get(s);
+            Path p = Paths.get(s.trim());
             if (!Files.exists(p)) {
+                System.err.println("NoSuchFileException: " + p);
                 return false;
             }
             ProgramProps.acceptPair("file", p.toAbsolutePath().toString());
@@ -220,8 +221,9 @@ public class MidiMain extends KMain implements KeyListener {
             if (s == null || s.trim().isEmpty()) {
                 return false;
             }
-            Path p = Paths.get(s);
+            Path p = Paths.get(s.trim());
             if (!Files.exists(p)) {
+                System.err.println("NoSuchFileException: " + p);
                 return false;
             }
             ProgramProps.acceptPair("soundbank", p.toAbsolutePath().toString());
