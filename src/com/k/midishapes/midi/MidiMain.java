@@ -18,6 +18,8 @@ import javax.sound.midi.Sequencer;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import org.lwjgl.opengl.Display;
@@ -64,6 +66,13 @@ public class MidiMain extends KMain implements KeyListener {
             System.err.println(l);
         } catch (Exception e) {
             e.printStackTrace();
+        }
+        try {
+            UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
+        } catch (ClassNotFoundException | InstantiationException
+                | IllegalAccessException | UnsupportedLookAndFeelException e1) {
+            e1.printStackTrace();
+            // eh.
         }
         Dimension d = new Dimension(800, 600);
         FPS.enable(0);
@@ -278,6 +287,10 @@ public class MidiMain extends KMain implements KeyListener {
 
             @Override
             public void run() {
+                if (DisplayHackThread.isInstanceBooting()) {
+                    // DO NOT PROCESS EVENTS WHILE BOOTING.
+                    return;
+                }
                 if (key == KeyEvent.VK_P || key == KeyEvent.VK_SPACE) {
                     if (MidiPlayer.isPlaying()) {
                         MidiPlayer.pause();

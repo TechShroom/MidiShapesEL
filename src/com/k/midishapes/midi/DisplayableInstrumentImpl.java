@@ -29,7 +29,7 @@ public class DisplayableInstrumentImpl
         super(idChannel);
         int ry_ = 0;
         ry_ += dim / 2;
-        ry_ += id * (dim * 2);
+        ry_ += id * (dim * 2 + (dim / 2));
         ry_++;
         ry = ry_;
         bounding =

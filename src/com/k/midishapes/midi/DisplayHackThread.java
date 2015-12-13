@@ -1,6 +1,7 @@
 package com.k.midishapes.midi;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 
 import javax.sound.midi.MidiSystem;
@@ -23,6 +24,7 @@ public class DisplayHackThread extends Thread {
     Sequencer seqr = null;
     public static boolean pause;
     static DisplayHackThread inst = null;
+    private AtomicBoolean booting = new AtomicBoolean(true);
 
     public static void actOnSequencer(Consumer<Sequencer> c) {
         if (inst != null && inst.seqr != null) {
@@ -31,10 +33,26 @@ public class DisplayHackThread extends Thread {
     }
 
     public static void begin(Sequence file) {
+        while (isInstanceBooting()) {
+            // wait
+            try {
+                Thread.sleep(10);
+            } catch (InterruptedException ignored) {
+            }
+        }
         if (inst != null) {
             try {
                 // psh, forgot to abort
                 abort = true;
+                if (inst.seqr != null) {
+                    try {
+                        inst.seqr.stop();
+                    } catch (IllegalStateException ignored) {
+                    }
+                }
+                if (DisplayHackThread.recv != null) {
+                    DisplayHackThread.recv.close();
+                }
                 inst.join(10);
                 System.err.println("joined");
             } catch (InterruptedException e) {
@@ -87,10 +105,19 @@ public class DisplayHackThread extends Thread {
             e1.printStackTrace();
             abort = true;
         }
+        booting.set(false);
         if (abort) {
             return;
         }
         seqr.start();
+    }
+
+    public boolean isBooting() {
+        return booting.get();
+    }
+    
+    public static boolean isInstanceBooting() {
+        return inst != null && inst.booting.get();
     }
 
     public static void repeat() {
