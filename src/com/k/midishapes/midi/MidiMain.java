@@ -4,7 +4,11 @@ import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.beans.XMLDecoder;
+import java.beans.XMLEncoder;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.nio.file.Files;
@@ -38,6 +42,56 @@ import emergencylanding.k.library.util.LUtils;
 import k.core.util.core.Helper.ProgramProps;
 
 public class MidiMain extends KMain implements KeyListener {
+
+    
+    private static final class SaveJFCThread extends Thread {
+        
+        private final JFileChooser toSave;
+        private final String config;
+
+        public SaveJFCThread(JFileChooser jfc, String config) {
+            this.toSave = jfc;
+            this.config = config;
+        }
+        
+        @Override
+        public void run() {
+            try (XMLEncoder enc = new XMLEncoder(configWriter(config))) {
+                enc.writeObject(toSave);
+            } catch (IOException e) {
+                System.err.println("Error saving JFC in " + config);
+                e.printStackTrace();
+            }
+        }
+
+    }
+
+    private static final Path CONFIG = Paths.get("./config");
+
+    static {
+        try {
+            Files.createDirectories(CONFIG);
+        } catch (IOException cannotCreate) {
+            System.err.println("Couldn't create config dir:");
+            cannotCreate.printStackTrace();
+        }
+    }
+
+    private static Path from(String path) {
+        return CONFIG.resolve(path);
+    }
+
+    public static OutputStream configWriter(String path) throws IOException {
+        return Files.newOutputStream(from(path));
+    }
+
+    public static InputStream configReader(String path) throws IOException {
+        return Files.newInputStream(from(path));
+    }
+
+    public static boolean isConfigPresent(String path) {
+        return Files.exists(from(path));
+    }
 
     public static void main(String[] args) {
         String[] norm = ProgramProps.normalizeCommandArgs(args);
@@ -77,13 +131,15 @@ public class MidiMain extends KMain implements KeyListener {
         }
         Dimension d = new Dimension(800, 600);
         FPS.enable(0);
-        FPS.disable(0);
+        // FPS.disable(0);
         try {
             DisplayLayer.initDisplay(false, d.width, d.height, "Midi Shapes",
                     false, args);
-            while (!Display.isCloseRequested()) {
+            while (!Display.isCloseRequested() || DisplayHackThread.isInstanceBooting()) {
                 DisplayLayer.loop(120);
             }
+            // Ensure all bindings processed
+            ELTexture.doBindings();
             DisplayLayer.destroy();
         } catch (Exception e) {
             e.printStackTrace();
@@ -131,16 +187,45 @@ public class MidiMain extends KMain implements KeyListener {
     private JFileChooser sbfc = new JFileChooser(), ffc = new JFileChooser();
 
     {
+        final String FFC_CONFIG = "ffc.xml";
+        final String SBFC_CONFIG = "sbfc.xml";
+        boolean doSetFFC = true;
+        boolean doSetSBFC = true;
+        if (isConfigPresent(SBFC_CONFIG)) {
+            try (
+                    XMLDecoder dec =
+                            new XMLDecoder(configReader(SBFC_CONFIG))) {
+                sbfc = (JFileChooser) dec.readObject();
+                doSetSBFC = false;
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        if (isConfigPresent(FFC_CONFIG)) {
+            try (
+                    XMLDecoder dec = new XMLDecoder(configReader(FFC_CONFIG))) {
+                ffc = (JFileChooser) dec.readObject();
+                doSetFFC = false;
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
         JFileChooser jfc = ffc;
-        jfc.removeChoosableFileFilter(jfc.getAcceptAllFileFilter());
-        jfc.addChoosableFileFilter(
-                new FileNameExtensionFilter("MIDI Files", "mid", "midi"));
-        jfc.setFileHidingEnabled(false);
+        if (doSetFFC) {
+            jfc.removeChoosableFileFilter(jfc.getAcceptAllFileFilter());
+            jfc.addChoosableFileFilter(
+                    new FileNameExtensionFilter("MIDI Files", "mid", "midi"));
+            jfc.setFileHidingEnabled(false);
+            Runtime.getRuntime().addShutdownHook(new SaveJFCThread(jfc, FFC_CONFIG));
+        }
         jfc = sbfc;
-        jfc.removeChoosableFileFilter(jfc.getAcceptAllFileFilter());
-        jfc.addChoosableFileFilter(
-                new FileNameExtensionFilter("SoundFont2 Files", "sf2"));
-        jfc.setFileHidingEnabled(false);
+        if (doSetSBFC) {
+            jfc.removeChoosableFileFilter(jfc.getAcceptAllFileFilter());
+            jfc.addChoosableFileFilter(
+                    new FileNameExtensionFilter("SoundFont2 Files", "sf2"));
+            jfc.setFileHidingEnabled(false);
+            Runtime.getRuntime().addShutdownHook(new SaveJFCThread(jfc, SBFC_CONFIG));
+        }
     }
 
     @Override
