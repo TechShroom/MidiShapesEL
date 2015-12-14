@@ -6,16 +6,21 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.beans.XMLDecoder;
 import java.beans.XMLEncoder;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 import javax.sound.midi.MidiSystem;
 import javax.sound.midi.Sequencer;
@@ -43,9 +48,10 @@ import k.core.util.core.Helper.ProgramProps;
 
 public class MidiMain extends KMain implements KeyListener {
 
-    
+    private static final List<Thread> runAtExit = new ArrayList<>();
+
     private static final class SaveJFCThread extends Thread {
-        
+
         private final JFileChooser toSave;
         private final String config;
 
@@ -53,11 +59,21 @@ public class MidiMain extends KMain implements KeyListener {
             this.toSave = jfc;
             this.config = config;
         }
-        
+
         @Override
         public void run() {
-            try (XMLEncoder enc = new XMLEncoder(configWriter(config))) {
+            try (
+                    XMLEncoder enc = new XMLEncoder(configWriter(config))) {
                 enc.writeObject(toSave);
+            } catch (IOException e) {
+                System.err.println("Error saving JFC in " + config);
+                e.printStackTrace();
+            }
+            try (
+                    Writer stream = new OutputStreamWriter(
+                            configWriter(config + ".pathurl"))) {
+                stream.write(toSave.getCurrentDirectory().getAbsolutePath()
+                        .toString());
             } catch (IOException e) {
                 System.err.println("Error saving JFC in " + config);
                 e.printStackTrace();
@@ -86,7 +102,8 @@ public class MidiMain extends KMain implements KeyListener {
     }
 
     public static InputStream configReader(String path) throws IOException {
-        return Files.newInputStream(from(path));
+        return Files.newInputStream(from(path), StandardOpenOption.CREATE,
+                StandardOpenOption.READ);
     }
 
     public static boolean isConfigPresent(String path) {
@@ -135,7 +152,8 @@ public class MidiMain extends KMain implements KeyListener {
         try {
             DisplayLayer.initDisplay(false, d.width, d.height, "Midi Shapes",
                     false, args);
-            while (!Display.isCloseRequested() || DisplayHackThread.isInstanceBooting()) {
+            while (!Display.isCloseRequested()
+                    || DisplayHackThread.isInstanceBooting()) {
                 DisplayLayer.loop(120);
             }
             // Ensure all bindings processed
@@ -151,6 +169,13 @@ public class MidiMain extends KMain implements KeyListener {
         MidiReader.exit();
         MidiDisplayer.exit();
         MidiPlayer.exit();
+        for (Thread thread : runAtExit) {
+            try {
+                thread.run();
+            } catch (Throwable t) {
+                System.err.println("Error runing atExit " + thread);
+            }
+        }
         Thread[] threads = new Thread[Thread.activeCount() + 10];
         Thread.enumerate(threads);
         for (Thread thread : threads) {
@@ -194,8 +219,20 @@ public class MidiMain extends KMain implements KeyListener {
         if (isConfigPresent(SBFC_CONFIG)) {
             try (
                     XMLDecoder dec =
-                            new XMLDecoder(configReader(SBFC_CONFIG))) {
+                            new XMLDecoder(configReader(SBFC_CONFIG));) {
                 sbfc = (JFileChooser) dec.readObject();
+                if (isConfigPresent("path" + SBFC_CONFIG)) {
+                    try (
+                            Scanner s = new Scanner(
+                                    configReader(SBFC_CONFIG + ".pathurl"))) {
+                        File f = new File(s.nextLine());
+                        System.err.println(f);
+                        if (f.exists() && f.isDirectory()) {
+                            System.err.println("set dir sbfc");
+                            sbfc.setCurrentDirectory(f);
+                        }
+                    }
+                }
                 doSetSBFC = false;
             } catch (IOException e) {
                 e.printStackTrace();
@@ -205,6 +242,16 @@ public class MidiMain extends KMain implements KeyListener {
             try (
                     XMLDecoder dec = new XMLDecoder(configReader(FFC_CONFIG))) {
                 ffc = (JFileChooser) dec.readObject();
+                try (
+                        Scanner s = new Scanner(
+                                configReader(FFC_CONFIG + ".pathurl"))) {
+                    File f = new File(s.nextLine());
+                    System.err.println(f);
+                    if (f.exists() && f.isDirectory()) {
+                        System.err.println("set dir ffc");
+                        ffc.setCurrentDirectory(f);
+                    }
+                }
                 doSetFFC = false;
             } catch (IOException e) {
                 e.printStackTrace();
@@ -213,16 +260,16 @@ public class MidiMain extends KMain implements KeyListener {
         JFileChooser jfc = ffc;
         if (doSetFFC) {
             jfc.setFileHidingEnabled(false);
-            Runtime.getRuntime().addShutdownHook(new SaveJFCThread(jfc, FFC_CONFIG));
         }
+        runAtExit.add(new SaveJFCThread(jfc, FFC_CONFIG));
         jfc.removeChoosableFileFilter(jfc.getAcceptAllFileFilter());
         jfc.addChoosableFileFilter(
                 new FileNameExtensionFilter("MIDI Files", "mid", "midi"));
         jfc = sbfc;
         if (doSetSBFC) {
             jfc.setFileHidingEnabled(false);
-            Runtime.getRuntime().addShutdownHook(new SaveJFCThread(jfc, SBFC_CONFIG));
         }
+        runAtExit.add(new SaveJFCThread(jfc, SBFC_CONFIG));
         jfc.removeChoosableFileFilter(jfc.getAcceptAllFileFilter());
         jfc.addChoosableFileFilter(
                 new FileNameExtensionFilter("SoundFont2 Files", "sf2"));
@@ -373,9 +420,13 @@ public class MidiMain extends KMain implements KeyListener {
 
             @Override
             public void run() {
-                if (DisplayHackThread.isInstanceBooting()) {
+                while (DisplayHackThread.isInstanceBooting()) {
                     // DO NOT PROCESS EVENTS WHILE BOOTING.
-                    return;
+                    try {
+                        Thread.sleep(1);
+                    } catch (InterruptedException e) {
+                        return;
+                    }
                 }
                 if (key == KeyEvent.VK_P || key == KeyEvent.VK_SPACE) {
                     if (MidiPlayer.isPlaying()) {
