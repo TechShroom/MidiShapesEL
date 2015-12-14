@@ -111,6 +111,7 @@ public class MidiMain extends KMain implements KeyListener {
     }
 
     public static void main(String[] args) {
+        initalizeProgramProps();
         String[] norm = ProgramProps.normalizeCommandArgs(args);
         for (int i = 0; i < norm.length; i += 2) {
             String key = norm[i], value = norm[i + 1];
@@ -201,6 +202,35 @@ public class MidiMain extends KMain implements KeyListener {
                 }
             }
         }
+    }
+
+    private static final String MOST_CONFIG = "config.cfg";
+
+    private static void initalizeProgramProps() {
+        runAtExit.add(new Thread("Save Program Props") {
+
+            @Override
+            public void run() {
+                try (
+                        OutputStream stream = configWriter(MOST_CONFIG)) {
+                    ProgramProps.getUnderlyingProperties().store(stream,
+                            "MidiShapes properties, change as you feel.");
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    return;
+                }
+            }
+        });
+        if (isConfigPresent(MOST_CONFIG)) {
+            try (
+                    InputStream stream = configReader(MOST_CONFIG)) {
+                ProgramProps.getUnderlyingProperties().load(stream);
+            } catch (IOException e) {
+                e.printStackTrace();
+                return;
+            }
+        }
+
     }
 
     @SuppressWarnings("deprecation")
