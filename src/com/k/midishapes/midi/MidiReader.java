@@ -3,6 +3,7 @@ package com.k.midishapes.midi;
 import java.io.File;
 import java.io.IOException;
 
+import javax.sound.midi.Instrument;
 import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.MidiDevice.Info;
 import javax.sound.midi.MidiSystem;
@@ -54,9 +55,7 @@ public class MidiReader {
                         + ":" + i.getDescription());
                 if (i.getName().contains("Gervill")) {
                     synth = (Synthesizer) MidiSystem.getMidiDevice(i);
-                    if (userRecvI == null) {
-                        userRecvI = i;
-                    }
+                    synth.open();
                     break;
                 }
             }
@@ -64,23 +63,30 @@ public class MidiReader {
             e1.printStackTrace();
         }
         Soundbank sf2bank = synth.getDefaultSoundbank();
+        synth.unloadAllInstruments(sf2bank);
         if (ProgramProps.hasKey("soundbank")) {
+            System.err.println("Opening soundbank...");
             try {
                 sf2bank = MidiSystem.getSoundbank(
                         new File(ProgramProps.getProperty("soundbank")));
-            } catch (InvalidMidiDataException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
+            } catch (IOException | InvalidMidiDataException e) {
                 e.printStackTrace();
             }
+            System.err.println("Done loading soundbank.");
         }
         if (sf2bank != null) {
-            try {
-                synth.loadAllInstruments(sf2bank);
-            } catch (Exception e) {
-                System.err.println("Couldn't load some instruments: ");
-                e.printStackTrace();
+            System.err.println("Injecting instruments...");
+            for (Instrument i : sf2bank.getInstruments()) {
+                try {
+                    if (!synth.loadInstrument(i)) {
+                        throw new RuntimeException("synth returned false");
+                    }
+                } catch (Exception e) {
+                    System.err.println("Couldn't load instrument: " + i);
+                    e.printStackTrace();
+                }
             }
+            System.err.println("Done injecting instruments.");
         }
         return synth;
     }
@@ -95,6 +101,9 @@ public class MidiReader {
         userRecvI = (Info) JOptionPane.showInputDialog(null,
                 "Choose a MidiDevice", "Choose a MidiDevice",
                 JOptionPane.QUESTION_MESSAGE, null, midiInfo, def);
+        if (userRecvI.getName().contains("Gervill")) {
+            userRecvI = null;
+        }
         return userRecvI != before;
     }
 
