@@ -60,9 +60,10 @@ public class ChainedReceiver implements Receiver {
             try {
                 chain.send(message, timeStamp);
             } catch (Exception e) {
-                System.err.println("!!IGNORE THIS ERROR!!");
-                e.printStackTrace();
-                System.err.println("!!-------END-------!!");
+                // ISE == not open
+                if (!(e instanceof IllegalStateException)) {
+                    e.printStackTrace();
+                }
                 closed.set(true);
             }
         }
